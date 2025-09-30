@@ -27,7 +27,6 @@ const Navigation = () => {
     { label: "About", id: "about" },
     { label: "Activities", id: "activities" },
     { label: "Teams", id: "teams" },
-    { label: "Roles", id: "roles" },
     { label: "Gallery", id: "gallery" },
     { label: "Contact", id: "contact" },
   ];
