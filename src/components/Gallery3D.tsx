@@ -1,4 +1,4 @@
-import { useRef, useState, useMemo } from "react";
+import { useRef, useState } from "react";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { OrbitControls, Sphere } from "@react-three/drei";
 import * as THREE from "three";
@@ -12,65 +12,43 @@ import event3 from "@/assets/event3.jpg";
 import event4 from "@/assets/event4.jpg";
 import event5 from "@/assets/event5.jpg";
 import event6 from "@/assets/event6.jpg";
+import event7 from "@/assets/event7.jpg";
+import event8 from "@/assets/event8.jpg";
+import event9 from "@/assets/event9.jpg";
+import event10 from "@/assets/event10.jpg";
+import event11 from "@/assets/event11.jpg";
+import event12 from "@/assets/event12.jpg";
+import event13 from "@/assets/event13.jpg";
+import event14 from "@/assets/event14.jpg";
+import event15 from "@/assets/event15.jpg";
+import event16 from "@/assets/event16.jpg";
 
 interface EventPhoto {
   id: number;
   title: string;
   date: string;
-  position: [number, number, number];
-  rotation: [number, number, number];
+  theta: number; // horizontal angle
+  phi: number; // vertical angle
   image: string;
 }
 
 const events: EventPhoto[] = [
-  {
-    id: 1,
-    title: "Annual Hackathon 2024",
-    date: "March 15, 2024",
-    position: [1.8, 0, 0],
-    rotation: [0, Math.PI / 2, 0],
-    image: event1,
-  },
-  {
-    id: 2,
-    title: "Robotics Workshop",
-    date: "February 20, 2024",
-    position: [0, 1.8, 0],
-    rotation: [-Math.PI / 2, 0, 0],
-    image: event2,
-  },
-  {
-    id: 3,
-    title: "Tech Seminar Series",
-    date: "January 10, 2024",
-    position: [-1.8, 0, 0],
-    rotation: [0, -Math.PI / 2, 0],
-    image: event3,
-  },
-  {
-    id: 4,
-    title: "Club Team Photo",
-    date: "December 5, 2023",
-    position: [0, -1.8, 0],
-    rotation: [Math.PI / 2, 0, 0],
-    image: event4,
-  },
-  {
-    id: 5,
-    title: "Project Exhibition",
-    date: "November 18, 2023",
-    position: [0, 0, 1.8],
-    rotation: [0, 0, 0],
-    image: event5,
-  },
-  {
-    id: 6,
-    title: "Electronics Workshop",
-    date: "October 8, 2023",
-    position: [0, 0, -1.8],
-    rotation: [0, Math.PI, 0],
-    image: event6,
-  },
+  { id: 1, title: "Annual Hackathon 2024", date: "March 15, 2024", theta: 0, phi: 0, image: event1 },
+  { id: 2, title: "Robotics Workshop", date: "February 20, 2024", theta: Math.PI / 2, phi: 0, image: event2 },
+  { id: 3, title: "Tech Seminar Series", date: "January 10, 2024", theta: Math.PI, phi: 0, image: event3 },
+  { id: 4, title: "Club Team Photo", date: "December 5, 2023", theta: -Math.PI / 2, phi: 0, image: event4 },
+  { id: 5, title: "Project Exhibition", date: "November 18, 2023", theta: Math.PI / 4, phi: Math.PI / 3, image: event5 },
+  { id: 6, title: "Electronics Workshop", date: "October 8, 2023", theta: -Math.PI / 4, phi: Math.PI / 3, image: event6 },
+  { id: 7, title: "Team Building Event", date: "September 22, 2023", theta: 3 * Math.PI / 4, phi: Math.PI / 3, image: event7 },
+  { id: 8, title: "Achievement Celebration", date: "August 12, 2023", theta: -3 * Math.PI / 4, phi: Math.PI / 3, image: event8 },
+  { id: 9, title: "Circuit Lab Session", date: "July 5, 2023", theta: Math.PI / 4, phi: -Math.PI / 3, image: event9 },
+  { id: 10, title: "Guest Speaker Event", date: "June 18, 2023", theta: -Math.PI / 4, phi: -Math.PI / 3, image: event10 },
+  { id: 11, title: "College Festival Booth", date: "May 10, 2023", theta: 3 * Math.PI / 4, phi: -Math.PI / 3, image: event11 },
+  { id: 12, title: "3D Printing Workshop", date: "April 25, 2023", theta: -3 * Math.PI / 4, phi: -Math.PI / 3, image: event12 },
+  { id: 13, title: "Coding Competition", date: "March 30, 2023", theta: Math.PI / 6, phi: Math.PI / 6, image: event13 },
+  { id: 14, title: "Project Demo Day", date: "February 14, 2023", theta: -Math.PI / 6, phi: Math.PI / 6, image: event14 },
+  { id: 15, title: "Club Orientation", date: "January 20, 2023", theta: 5 * Math.PI / 6, phi: -Math.PI / 6, image: event15 },
+  { id: 16, title: "Drone Workshop", date: "December 8, 2022", theta: -5 * Math.PI / 6, phi: -Math.PI / 6, image: event16 },
 ];
 
 function Earth() {
@@ -83,18 +61,18 @@ function Earth() {
   });
 
   return (
-    <Sphere ref={meshRef} args={[1.6, 64, 64]}>
+    <Sphere ref={meshRef} args={[1.5, 64, 64]}>
       <meshStandardMaterial
         color="#1e40af"
         wireframe
         transparent
-        opacity={0.15}
+        opacity={0.1}
       />
     </Sphere>
   );
 }
 
-function PhotoPlane({ 
+function CurvedPhoto({ 
   event, 
   onClick, 
   onHover 
@@ -105,15 +83,33 @@ function PhotoPlane({
 }) {
   const [hovered, setHovered] = useState(false);
   const meshRef = useRef<THREE.Mesh>(null);
+  const groupRef = useRef<THREE.Group>(null);
   const texture = useLoader(THREE.TextureLoader, event.image);
 
+  const radius = 1.65;
+  
+  // Calculate position on sphere surface
+  const x = radius * Math.sin(event.phi) * Math.cos(event.theta);
+  const y = radius * Math.cos(event.phi);
+  const z = radius * Math.sin(event.phi) * Math.sin(event.theta);
+
   useFrame(() => {
-    if (meshRef.current) {
-      const targetScale = hovered ? 1.3 : 1;
-      meshRef.current.scale.lerp(
-        new THREE.Vector3(targetScale, targetScale, targetScale),
-        0.1
+    if (groupRef.current) {
+      const targetScale = hovered ? 1.25 : 1;
+      const currentScale = groupRef.current.scale.x;
+      const newScale = THREE.MathUtils.lerp(currentScale, targetScale, 0.1);
+      groupRef.current.scale.set(newScale, newScale, newScale);
+      
+      // Move outward when hovered
+      const targetRadius = hovered ? radius + 0.3 : radius;
+      const currentRadius = Math.sqrt(
+        groupRef.current.position.x ** 2 + 
+        groupRef.current.position.y ** 2 + 
+        groupRef.current.position.z ** 2
       );
+      const newRadius = THREE.MathUtils.lerp(currentRadius, targetRadius, 0.1);
+      const scale = newRadius / currentRadius;
+      groupRef.current.position.multiplyScalar(scale);
     }
   });
 
@@ -129,29 +125,40 @@ function PhotoPlane({
     document.body.style.cursor = 'auto';
   };
 
+  // Create a curved surface using SphereGeometry segment
+  const curvedGeometry = new THREE.SphereGeometry(
+    radius, 
+    16, 
+    16, 
+    event.theta - 0.25, 
+    0.5, 
+    event.phi + Math.PI / 2 - 0.25, 
+    0.5
+  );
+
   return (
-    <mesh
-      ref={meshRef}
-      position={event.position}
-      rotation={event.rotation}
-      onClick={() => onClick(event)}
-      onPointerOver={handlePointerOver}
-      onPointerOut={handlePointerOut}
-    >
-      <planeGeometry args={[0.8, 0.8]} />
-      <meshStandardMaterial 
-        map={texture} 
-        side={THREE.DoubleSide}
-        emissive={hovered ? "#fb923c" : "#000000"}
-        emissiveIntensity={hovered ? 0.3 : 0}
-      />
+    <group ref={groupRef} position={[x, y, z]}>
+      <mesh
+        ref={meshRef}
+        geometry={curvedGeometry}
+        onClick={() => onClick(event)}
+        onPointerOver={handlePointerOver}
+        onPointerOut={handlePointerOut}
+      >
+        <meshStandardMaterial 
+          map={texture} 
+          side={THREE.DoubleSide}
+          emissive={hovered ? "#fb923c" : "#000000"}
+          emissiveIntensity={hovered ? 0.4 : 0}
+        />
+      </mesh>
       {hovered && (
-        <mesh position={[0, 0, -0.01]}>
-          <planeGeometry args={[0.85, 0.85]} />
-          <meshBasicMaterial color="#f97316" transparent opacity={0.3} side={THREE.DoubleSide} />
+        <mesh position={[0, 0, 0]}>
+          <sphereGeometry args={[radius * 1.02, 16, 16, event.theta - 0.26, 0.52, event.phi + Math.PI / 2 - 0.26, 0.52]} />
+          <meshBasicMaterial color="#f97316" transparent opacity={0.4} side={THREE.DoubleSide} />
         </mesh>
       )}
-    </mesh>
+    </group>
   );
 }
 
@@ -180,7 +187,7 @@ const Gallery3D = () => {
         <div className="max-w-6xl mx-auto">
           <Card className="overflow-hidden border-border shadow-glow">
             <CardContent className="p-0">
-              <div className="h-[600px] w-full bg-gradient-to-b from-primary/5 to-secondary/5">
+              <div className="h-[700px] w-full bg-gradient-to-b from-primary/5 to-secondary/5">
                 <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
                   <ambientLight intensity={0.6} />
                   <pointLight position={[10, 10, 10]} intensity={1.2} />
@@ -190,7 +197,7 @@ const Gallery3D = () => {
                   <Earth />
                   
                   {events.map((event) => (
-                    <PhotoPlane
+                    <CurvedPhoto
                       key={event.id}
                       event={event}
                       onClick={handlePhotoClick}
@@ -202,7 +209,7 @@ const Gallery3D = () => {
                     ref={orbitControlsRef}
                     enableZoom={true}
                     enablePan={false}
-                    minDistance={3}
+                    minDistance={3.5}
                     maxDistance={8}
                     autoRotate={!isHovering}
                     autoRotateSpeed={0.5}
