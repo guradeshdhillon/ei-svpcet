@@ -61,6 +61,7 @@ const Hero = () => {
               size="lg"
               variant="outline"
               onClick={() => scrollToSection("contact")}
+              style={{backgroundColor : "#F8A651", borderColor: "#F8A651"}}
               className="border-white text-white hover:bg-white hover:text-primary"
             >
               Join the Club
