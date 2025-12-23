@@ -1,6 +1,6 @@
-import Navigation from "../Navigation";
-import Gallery3D from "../Gallery3D";
-import Footer from "../Footer";
+import Navigation from "@/components/Navigation";
+import Gallery3D from "@/components/Gallery3D";
+import Footer from "@/components/Footer";
 
 export default function GalleryLayout() {
   return (

@@ -48,10 +48,10 @@ function resolveDriveUrl(url: string) {
     
     // Handle Google Drive URLs
     if (u.hostname.includes("drive.google.com")) {
-      // Extract ID from query parameter (thumbnail?id=...)
+      // Method 1: Extract ID from query parameter (thumbnail?id=...)
       let id = u.searchParams.get("id");
       
-      // Extract ID from pathname (/d/ID or /file/d/ID)
+      // Method 2: Extract ID from pathname (/d/ID or /file/d/ID)
       if (!id) {
         const pathMatch = u.pathname.match(/\/(?:d|file\/d)\/([a-zA-Z0-9_-]+)/);
         if (pathMatch) {
@@ -61,13 +61,13 @@ function resolveDriveUrl(url: string) {
       
       if (id && id.trim()) {
         id = id.trim();
-        // Try multiple export formats - using a direct file serving approach
-        // This format bypasses the confirmation page and works with CORS
-        const resolved = `https://lh3.googleusercontent.com/d/${id}=w1024-rw`;
-        console.log(`✓ Resolved: ${id}`);
+        // Use ucexport=download which forces direct image delivery
+        // This bypasses Google's virus scan confirmation page
+        const resolved = `https://drive.google.com/uc?export=download&id=${id}&confirm=t`;
+        console.log(`✓ Resolved Drive URL: ${id}`);
         return resolved;
       } else {
-        console.warn(`Could not extract ID from: ${url}`);
+        console.warn(`Could not extract ID from Google Drive URL: ${url}`);
       }
     }
     return url;
@@ -379,10 +379,9 @@ export default function Gallery3D() {
                 src={resolveDriveUrl(selected?.url || "")} 
                 alt={selected?.title} 
                 className="max-w-full max-h-[60vh] object-contain rounded" 
-                onLoad={() => console.log(`✅ Modal image loaded: ${selected?.title}`)}
                 onError={(e) => {
                   const img = e.currentTarget as HTMLImageElement;
-                  console.error(`❌ Modal image failed: ${selected?.title}`, resolveDriveUrl(selected?.url || ""));
+                  console.error(`Modal image failed to load: ${selected?.url}`);
                   img.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='480'%3E%3Crect width='100%25' height='100%25' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' fill='%236b7280' font-size='18' dominant-baseline='middle' text-anchor='middle'%3EImage could not load%3C/text%3E%3C/svg%3E";
                 }}
               />
@@ -391,9 +390,6 @@ export default function Gallery3D() {
                 src={resolveDriveUrl(selected?.url || "")} 
                 controls 
                 className="max-w-full max-h-[60vh] rounded"
-                onError={(e) => {
-                  console.error(`❌ Video failed: ${selected?.title}`);
-                }}
               />
             )}
           </div>

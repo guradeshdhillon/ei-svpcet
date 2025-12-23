@@ -48,10 +48,10 @@ function resolveDriveUrl(url: string) {
     
     // Handle Google Drive URLs
     if (u.hostname.includes("drive.google.com")) {
-      // Extract ID from query parameter (thumbnail?id=...)
+      // Method 1: Extract ID from query parameter (thumbnail?id=...)
       let id = u.searchParams.get("id");
       
-      // Extract ID from pathname (/d/ID or /file/d/ID)
+      // Method 2: Extract ID from pathname (/d/ID or /file/d/ID)
       if (!id) {
         const pathMatch = u.pathname.match(/\/(?:d|file\/d)\/([a-zA-Z0-9_-]+)/);
         if (pathMatch) {
@@ -61,13 +61,13 @@ function resolveDriveUrl(url: string) {
       
       if (id && id.trim()) {
         id = id.trim();
-        // Try multiple export formats - using a direct file serving approach
-        // This format bypasses the confirmation page and works with CORS
-        const resolved = `https://lh3.googleusercontent.com/d/${id}=w1024-rw`;
-        console.log(`✓ Resolved: ${id}`);
+        // Use ucexport=download which forces direct image delivery
+        // This bypasses Google's virus scan confirmation page
+        const resolved = `https://drive.google.com/uc?export=download&id=${id}&confirm=t`;
+        console.log(`✓ Resolved Drive URL: ${id}`);
         return resolved;
       } else {
-        console.warn(`Could not extract ID from: ${url}`);
+        console.warn(`Could not extract ID from Google Drive URL: ${url}`);
       }
     }
     return url;

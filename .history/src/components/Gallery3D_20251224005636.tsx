@@ -32,47 +32,32 @@ function generateSpherePosition(index: number, total: number) {
 function resolveDriveUrl(url: string) {
   try {
     // Handle empty URLs
-    if (!url || !url.trim()) {
-      console.warn("Empty URL provided");
-      return url;
-    }
+    if (!url || !url.trim()) return url;
     
-    // Try to parse the URL
-    let u: URL;
-    try {
-      u = new URL(url);
-    } catch {
-      console.warn(`Invalid URL format: ${url}`);
-      return url;
-    }
-    
-    // Handle Google Drive URLs
+    const u = new URL(url);
+    // handle drive thumbnail links like https://drive.google.com/thumbnail?id=ID&sz=...
+    // also handles direct file links like https://drive.google.com/file/d/ID/view
     if (u.hostname.includes("drive.google.com")) {
-      // Extract ID from query parameter (thumbnail?id=...)
       let id = u.searchParams.get("id");
       
-      // Extract ID from pathname (/d/ID or /file/d/ID)
+      // If not found in query params, try pathname
       if (!id) {
-        const pathMatch = u.pathname.match(/\/(?:d|file\/d)\/([a-zA-Z0-9_-]+)/);
+        const pathMatch = u.pathname.match(/\/d\/([a-zA-Z0-9_-]+)/);
         if (pathMatch) {
           id = pathMatch[1];
         }
       }
       
       if (id && id.trim()) {
-        id = id.trim();
-        // Try multiple export formats - using a direct file serving approach
-        // This format bypasses the confirmation page and works with CORS
-        const resolved = `https://lh3.googleusercontent.com/d/${id}=w1024-rw`;
-        console.log(`✓ Resolved: ${id}`);
+        // Use export=view with no-cache busting for direct image serving
+        // This is the most reliable way to load images from Google Drive
+        const resolved = `https://drive.google.com/uc?export=view&id=${id}&t=${Date.now()}`;
         return resolved;
-      } else {
-        console.warn(`Could not extract ID from: ${url}`);
       }
     }
     return url;
   } catch (err) {
-    console.error(`URL resolution error for: ${url}`, err);
+    console.error(`URL parsing error for: ${url}`, err);
     return url;
   }
 }
@@ -115,30 +100,44 @@ function CurvedPhoto({
         const loader = new THREE.TextureLoader();
         loader.crossOrigin = "anonymous";
         
-        // Resolve gallery.json URL to direct image URL
+        // Use gallery.json URL for image preview on tiles
         const resolved = resolveDriveUrl(event.url);
-        console.log(`📷 Event #${event.id}: Loading "${event.title}"`);
+        console.log(`[Event #${event.id}] Loading texture: ${event.title}`);
         
-        // Load texture with proper callbacks
-        const tex = loader.load(
-          resolved,
-          // Success callback
-          (loadedTex) => {
-            console.log(`✅ Event #${event.id}: Image loaded`);
-            loadedTex.colorSpace = THREE.SRGBColorSpace;
-          },
-          // Progress callback (unused)
-          undefined,
-          // Error callback
-          (error) => {
-            console.error(`❌ Event #${event.id}: Image failed`, error);
-            setTextureError(true);
-          }
-        );
-        return tex;
+        let tex: THREE.Texture | null = null;
+        let attempts = 0;
+        const maxAttempts = 1;
+        
+        const attemptLoad = () => {
+          attempts++;
+          console.log(`[Event #${event.id}] Attempt ${attempts}/${maxAttempts}`);
+          
+          tex = loader.load(
+            resolved,
+            (loadedTex) => {
+              console.log(`✓ [Event #${event.id}] Image loaded: ${event.title}`);
+              // Set color space for proper rendering in modern three.js
+              loadedTex.colorSpace = THREE.SRGBColorSpace;
+            },
+            (progress) => {
+              // Optional: log progress
+              if (progress.loaded && progress.total) {
+                const pct = ((progress.loaded / progress.total) * 100).toFixed(0);
+                console.log(`[Event #${event.id}] Progress: ${pct}%`);
+              }
+            },
+            (error) => {
+              console.error(`✗ [Event #${event.id}] Failed to load: ${event.title}`, error.message);
+              setTextureError(true);
+            }
+          );
+          return tex;
+        };
+        
+        return attemptLoad() || new THREE.Texture();
       }
 
-      // For video, use the resolved URL
+      // For video, use the full URL
       const video = document.createElement("video");
       video.src = resolveDriveUrl(event.url);
       video.crossOrigin = "anonymous";
@@ -337,7 +336,7 @@ export default function Gallery3D() {
             <p className="text-xs text-slate-500 mb-3">Click to view full size →</p>
             <div className="flex items-center gap-3 overflow-x-auto pb-2">
               {events.map((ev) => {
-                // Resolve Google Drive URL to direct image format
+                // Use resolveDriveUrl for both thumbnail and 3D canvas
                 const thumbUrl = resolveDriveUrl(ev.url);
                 return (
                   <button
@@ -345,17 +344,14 @@ export default function Gallery3D() {
                     onClick={() => setSelected(ev)}
                     className="flex-shrink-0 rounded overflow-hidden w-28 h-20 shadow-sm ring-1 ring-slate-300 hover:ring-blue-500 transition-all hover:scale-105"
                     aria-label={ev.title}
-                    title={ev.title}
                   >
                     <img
                       src={thumbUrl}
                       alt={ev.title}
                       className="w-full h-full object-cover"
                       loading="lazy"
-                      onLoad={() => console.log(`✅ Thumbnail loaded: #${ev.id}`)}
                       onError={(e) => {
-                        console.error(`❌ Thumbnail failed: #${ev.id}`, thumbUrl);
-                        (e.currentTarget as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='180'%3E%3Crect width='100%25' height='100%25' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' fill='%236b7280' font-size='12' dominant-baseline='middle' text-anchor='middle'%3EUnavailable%3C/text%3E%3C/svg%3E";
+                        (e.currentTarget as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='180'%3E%3Crect width='100%25' height='100%25' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' fill='%236b7280' font-size='12' dominant-baseline='middle' text-anchor='middle'%3ELoading...%3C/text%3E%3C/svg%3E";
                       }}
                     />
                   </button>
@@ -379,10 +375,9 @@ export default function Gallery3D() {
                 src={resolveDriveUrl(selected?.url || "")} 
                 alt={selected?.title} 
                 className="max-w-full max-h-[60vh] object-contain rounded" 
-                onLoad={() => console.log(`✅ Modal image loaded: ${selected?.title}`)}
                 onError={(e) => {
                   const img = e.currentTarget as HTMLImageElement;
-                  console.error(`❌ Modal image failed: ${selected?.title}`, resolveDriveUrl(selected?.url || ""));
+                  console.error(`Modal image failed to load: ${selected?.url}`);
                   img.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='480'%3E%3Crect width='100%25' height='100%25' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' fill='%236b7280' font-size='18' dominant-baseline='middle' text-anchor='middle'%3EImage could not load%3C/text%3E%3C/svg%3E";
                 }}
               />
@@ -391,9 +386,6 @@ export default function Gallery3D() {
                 src={resolveDriveUrl(selected?.url || "")} 
                 controls 
                 className="max-w-full max-h-[60vh] rounded"
-                onError={(e) => {
-                  console.error(`❌ Video failed: ${selected?.title}`);
-                }}
               />
             )}
           </div>

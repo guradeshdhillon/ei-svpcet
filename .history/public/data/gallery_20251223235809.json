@@ -68,7 +68,11 @@
     "date": "2024-01-01",
     "type": "image",
     "url": "https://drive.google.com/thumbnail?id=1Xd5y9M6x7tsAFbKA7B3bM2N-G0Nt8ok6&sz=w1024"
-  },
+  }
+
+  /* … CONTINUES … */
+
+,
   {
     "id": 11,
     "title": "Gallery Image",

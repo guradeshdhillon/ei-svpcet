@@ -7,6 +7,24 @@ import { Card, CardContent } from "./ui/card";
 import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
 import { AlertCircle } from "lucide-react";
 
+// Import local preview images
+import event1 from "../assets/event1.jpg";
+import event2 from "../assets/event2.jpg";
+import event3 from "../assets/event3.jpg";
+import event4 from "../assets/event4.jpg";
+import event5 from "../assets/event5.jpg";
+import event6 from "../assets/event6.jpg";
+import event7 from "../assets/event7.jpg";
+import event8 from "../assets/event8.jpg";
+import event9 from "../assets/event9.jpg";
+import event10 from "../assets/event10.jpg";
+import event11 from "../assets/event11.jpg";
+import event12 from "../assets/event12.jpg";
+import event13 from "../assets/event13.jpg";
+import event14 from "../assets/event14.jpg";
+import event15 from "../assets/event15.jpg";
+import event16 from "../assets/event16.jpg";
+
 type MediaType = "image" | "video";
 
 interface EventPhoto {
@@ -15,8 +33,20 @@ interface EventPhoto {
   date: string;
   type: MediaType;
   url: string;
+  previewUrl?: string; // local preview image path
   theta?: number;
   phi?: number;
+}
+
+// Map event IDs to local preview images
+const previewImageMap: Record<number, string> = {
+  1: event1, 2: event2, 3: event3, 4: event4, 5: event5, 6: event6,
+  7: event7, 8: event8, 9: event9, 10: event10, 11: event11, 12: event12,
+  13: event13, 14: event14, 15: event15, 16: event16,
+};
+
+function getPreviewImage(eventId: number): string | undefined {
+  return previewImageMap[eventId];
 }
 
 /* Enhanced Fibonacci / golden-angle distribution for organized sphere layout */
@@ -31,48 +61,14 @@ function generateSpherePosition(index: number, total: number) {
 
 function resolveDriveUrl(url: string) {
   try {
-    // Handle empty URLs
-    if (!url || !url.trim()) {
-      console.warn("Empty URL provided");
-      return url;
-    }
-    
-    // Try to parse the URL
-    let u: URL;
-    try {
-      u = new URL(url);
-    } catch {
-      console.warn(`Invalid URL format: ${url}`);
-      return url;
-    }
-    
-    // Handle Google Drive URLs
+    const u = new URL(url);
+    // handle drive thumbnail links like https://drive.google.com/thumbnail?id=ID&sz=...
     if (u.hostname.includes("drive.google.com")) {
-      // Extract ID from query parameter (thumbnail?id=...)
-      let id = u.searchParams.get("id");
-      
-      // Extract ID from pathname (/d/ID or /file/d/ID)
-      if (!id) {
-        const pathMatch = u.pathname.match(/\/(?:d|file\/d)\/([a-zA-Z0-9_-]+)/);
-        if (pathMatch) {
-          id = pathMatch[1];
-        }
-      }
-      
-      if (id && id.trim()) {
-        id = id.trim();
-        // Try multiple export formats - using a direct file serving approach
-        // This format bypasses the confirmation page and works with CORS
-        const resolved = `https://lh3.googleusercontent.com/d/${id}=w1024-rw`;
-        console.log(`✓ Resolved: ${id}`);
-        return resolved;
-      } else {
-        console.warn(`Could not extract ID from: ${url}`);
-      }
+      const id = u.searchParams.get("id") || (u.pathname.match(/\/d\/([a-zA-Z0-9_-]+)/) || [])[1];
+      if (id) return `https://drive.google.com/uc?export=view&id=${id}`;
     }
     return url;
-  } catch (err) {
-    console.error(`URL resolution error for: ${url}`, err);
+  } catch {
     return url;
   }
 }
@@ -111,34 +107,30 @@ function CurvedPhoto({
 
   const texture = useMemo(() => {
     try {
+      const loader = new THREE.TextureLoader();
+      
+      // For image events, try local preview first, fallback to full resolution if available
       if (event.type === "image") {
-        const loader = new THREE.TextureLoader();
-        loader.crossOrigin = "anonymous";
+        const previewUrl = getPreviewImage(event.id);
+        const urlToLoad = previewUrl || resolveDriveUrl(event.url);
         
-        // Resolve gallery.json URL to direct image URL
-        const resolved = resolveDriveUrl(event.url);
-        console.log(`📷 Event #${event.id}: Loading "${event.title}"`);
-        
-        // Load texture with proper callbacks
         const tex = loader.load(
-          resolved,
-          // Success callback
-          (loadedTex) => {
-            console.log(`✅ Event #${event.id}: Image loaded`);
-            loadedTex.colorSpace = THREE.SRGBColorSpace;
-          },
-          // Progress callback (unused)
+          urlToLoad,
           undefined,
-          // Error callback
+          undefined,
           (error) => {
-            console.error(`❌ Event #${event.id}: Image failed`, error);
+            console.error(`Failed to load image: ${urlToLoad}`, error);
             setTextureError(true);
           }
         );
+        // prefer sRGB encoding for color-correct results when available
+        try {
+          if (tex) (tex as any).encoding = (THREE as any).sRGBEncoding ?? (tex as any).encoding;
+        } catch {}
         return tex;
       }
 
-      // For video, use the resolved URL
+      // For video, use the full URL
       const video = document.createElement("video");
       video.src = resolveDriveUrl(event.url);
       video.crossOrigin = "anonymous";
@@ -146,27 +138,26 @@ function CurvedPhoto({
       video.muted = true;
       video.playsInline = true;
       video.addEventListener("error", () => {
-        console.error(`✗ Failed to load video: ${event.id} - ${event.title}`);
+        console.error(`Failed to load video: ${event.url}`);
         setTextureError(true);
       });
-      video.play().catch((err) => console.error(`Video play error for ${event.id}:`, err));
+      video.play().catch((err) => console.error("Video play error:", err));
       return new THREE.VideoTexture(video);
     } catch (error) {
-      console.error(`Texture loading error for event ${event.id}:`, error);
+      console.error("Texture loading error:", error);
       setTextureError(true);
-      // Return a placeholder texture with light gray
+      // Return a placeholder texture
       const canvas = document.createElement("canvas");
       canvas.width = 256;
       canvas.height = 256;
       const ctx = canvas.getContext("2d");
       if (ctx) {
-        ctx.fillStyle = "#f3f4f6";
+        ctx.fillStyle = "#e5e7eb";
         ctx.fillRect(0, 0, 256, 256);
         ctx.fillStyle = "#9ca3af";
-        ctx.font = "14px sans-serif";
+        ctx.font = "16px sans-serif";
         ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText("Image unavailable", 128, 128);
+        ctx.fillText("No image", 128, 128);
       }
       return new THREE.CanvasTexture(canvas);
     }
@@ -204,7 +195,7 @@ function CurvedPhoto({
     const thetaStart = Math.max(0, normPhi + Math.PI / 2 - 0.25);
     const thetaLen = 0.5;
     return new THREE.SphereGeometry(radiusAdjusted, 16, 16, phiStart, phiLen, thetaStart, thetaLen);
-  }, [normPhi, normTheta, radiusAdjusted]);
+  }, [normPhi, normTheta, radius]);
 
   if (textureError) {
     return (
@@ -297,7 +288,7 @@ export default function Gallery3D() {
                 {/* Bright white background */}
                 <color attach="background" args={["#ffffff"]} />
                 {/* Strong hemisphere for bright, even fill */}
-                <hemisphereLight args={[0xffffff, 0xe8e8e8, 1.2]} />
+                <hemisphereLight skyColor={0xffffff} groundColor={0xe8e8e8} intensity={1.2} />
                 {/* Bright key light from top-right */}
                 <directionalLight position={[6, 8, 4]} intensity={1.1} color={0xffffff} castShadow={false} />
                 {/* Gentle fill light from opposite side */}
@@ -334,28 +325,24 @@ export default function Gallery3D() {
         {/* Thumbnails strip */}
         {events.length > 0 && (
           <div className="p-4 border-t border-slate-200 bg-white">
-            <p className="text-xs text-slate-500 mb-3">Click to view full size →</p>
-            <div className="flex items-center gap-3 overflow-x-auto pb-2">
+            <div className="flex items-center gap-3 overflow-x-auto">
               {events.map((ev) => {
-                // Resolve Google Drive URL to direct image format
-                const thumbUrl = resolveDriveUrl(ev.url);
+                const previewUrl = getPreviewImage(ev.id);
+                const thumbUrl = previewUrl || resolveDriveUrl(ev.url);
                 return (
                   <button
                     key={ev.id}
                     onClick={() => setSelected(ev)}
                     className="flex-shrink-0 rounded overflow-hidden w-28 h-20 shadow-sm ring-1 ring-slate-300 hover:ring-blue-500 transition-all hover:scale-105"
                     aria-label={ev.title}
-                    title={ev.title}
                   >
                     <img
                       src={thumbUrl}
                       alt={ev.title}
                       className="w-full h-full object-cover"
-                      loading="lazy"
-                      onLoad={() => console.log(`✅ Thumbnail loaded: #${ev.id}`)}
+                      crossOrigin="anonymous"
                       onError={(e) => {
-                        console.error(`❌ Thumbnail failed: #${ev.id}`, thumbUrl);
-                        (e.currentTarget as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='180'%3E%3Crect width='100%25' height='100%25' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' fill='%236b7280' font-size='12' dominant-baseline='middle' text-anchor='middle'%3EUnavailable%3C/text%3E%3C/svg%3E";
+                        (e.currentTarget as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='180'%3E%3Crect width='100%25' height='100%25' fill='%23e5e7eb'/%3E%3Ctext x='50%25' y='50%25' fill='%239ca3af' font-size='12' dominant-baseline='middle' text-anchor='middle'%3Eunavailable%3C/text%3E%3C/svg%3E";
                       }}
                     />
                   </button>
@@ -367,36 +354,27 @@ export default function Gallery3D() {
       </Card>
 
       <Dialog open={!!selected} onOpenChange={() => setSelected(null)}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-          <DialogTitle className="text-2xl font-bold">{selected?.title}</DialogTitle>
-          <div className="text-sm text-slate-500 mb-4 flex gap-4">
-            <span>{selected?.date}</span>
-            <span className="capitalize bg-slate-100 px-2 py-1 rounded text-xs font-medium">{selected?.type}</span>
-          </div>
-          <div className="flex justify-center items-center bg-slate-50 rounded-lg p-4 min-h-[300px]">
-            {selected?.type === "image" ? (
-              <img 
-                src={resolveDriveUrl(selected?.url || "")} 
-                alt={selected?.title} 
-                className="max-w-full max-h-[60vh] object-contain rounded" 
-                onLoad={() => console.log(`✅ Modal image loaded: ${selected?.title}`)}
-                onError={(e) => {
-                  const img = e.currentTarget as HTMLImageElement;
-                  console.error(`❌ Modal image failed: ${selected?.title}`, resolveDriveUrl(selected?.url || ""));
-                  img.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='480'%3E%3Crect width='100%25' height='100%25' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' fill='%236b7280' font-size='18' dominant-baseline='middle' text-anchor='middle'%3EImage could not load%3C/text%3E%3C/svg%3E";
-                }}
-              />
-            ) : (
-              <video 
-                src={resolveDriveUrl(selected?.url || "")} 
-                controls 
-                className="max-w-full max-h-[60vh] rounded"
-                onError={(e) => {
-                  console.error(`❌ Video failed: ${selected?.title}`);
-                }}
-              />
-            )}
-          </div>
+        <DialogContent className="max-w-2xl">
+          <DialogTitle>{selected?.title}</DialogTitle>
+          <div className="text-sm text-slate-600 mb-3">{selected?.date}</div>
+          {selected?.type === "image" ? (
+            <img 
+              src={resolveDriveUrl(selected?.url || "")} 
+              alt={selected?.title} 
+              className="w-full max-h-[70vh] object-contain rounded" 
+              crossOrigin="anonymous"
+              onError={(e) => {
+                (e.currentTarget as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='480'%3E%3Crect width='100%25' height='100%25' fill='%23e5e7eb'/%3E%3Ctext x='50%25' y='50%25' fill='%239ca3af' font-size='18' dominant-baseline='middle' text-anchor='middle'%3EImage unavailable%3C/text%3E%3C/svg%3E";
+              }}
+            />
+          ) : (
+            <video 
+              src={resolveDriveUrl(selected?.url || "")} 
+              controls 
+              className="w-full max-h-[70vh] rounded"
+              crossOrigin="anonymous"
+            />
+          )}
         </DialogContent>
       </Dialog>
     </section>
