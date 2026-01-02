@@ -1,45 +1,81 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar, MapPin } from "lucide-react";
-import hackathonImg from "@/assets/hackathon.jpg";
-import workshopImg from "@/assets/workshop.jpg";
-import techfestImg from "@/assets/techfest.jpg";
+import abhyudaya from "@/activities-assets/abhyudaya.jpeg";
+import donationdrive from "@/activities-assets/donationdrive.jpg";
+import rashtrabimaan from "@/activities-assets/rashtrabimaan.jpg";
+import slum from "@/activities-assets/slum.jpg";
+import induction from "@/activities-assets/induction.jpg";
+import sevasankalp from "@/activities-assets/sevasankalp.jpeg";
+import diwalimilan from "@/activities-assets/diwalimilan.jpeg";
 
 const Activities = () => {
   const activities = [
     {
-      title: "Annual Hackathon",
-      description: "36-hour coding marathon where teams build innovative solutions to real-world problems. Win prizes, mentorship, and industry connections.",
-      image: hackathonImg,
-      date: "March 2024",
-      location: "Main Campus",
+      title: "Abhayaduya 24.0",
+      description: "Abhayadaya is a unique and prestigious event organized exclusively by Engineering India (EI), where EI coordinators from all colleges come together to make it grand and impactful. It is the biggest technical event of EI, showcasing innovation, teamwork, and technical excellence on a large scale. Last year, this mega event was successfully conducted at Smruti Mandir Parisar, Reshimbagh, with active participation from multiple colleges. Abhayadaya stands as a symbol of EI’s unity, technical strength, and its ability to organize large-scale events that leave a lasting impact.",
+      image: abhyudaya,
+      date: "September 2024",
+      location: "Smruti Mandir Parisar, Reshimbagh",
       color: "from-primary to-primary/80",
     },
     {
-      title: "Technical Workshops",
-      description: "Hands-on learning sessions covering cutting-edge technologies like AI, IoT, Cloud Computing, and more. Expert speakers from industry and academia.",
-      image: workshopImg,
-      date: "Monthly",
-      location: "Engineering Block",
+      title: "Donation drive - Orphanage Visit",
+      description: "EI Coordinators visited an orphanage center with the aim of spreading awareness, care, and positivity. During the visit, the coordinators guided the children and explained the importance and benefits of education in a simple and motivating way. Various fun activities were conducted to create a joyful and friendly environment. As a gesture of support and love, books, chocolates, and stationery were distributed among the children. The visit was not only about giving resources but also about sharing time, encouragement, and hope, making the experience meaningful and heart-warming for everyone involved.",
+      image: donationdrive,
+      date: "January 2025",
+      location: "Shri Shradhanand Anathalaya,Plot No. 123, Abhyankar Nagar Road Opp. Punjab National Bank, Shradhanandpeth, Maharashtra 440022",
       color: "from-secondary to-secondary/80",
     },
     {
-      title: "TechFest",
-      description: "Our flagship annual technical festival featuring competitions, exhibitions, guest lectures, and networking opportunities with industry leaders.",
-      image: techfestImg,
-      date: "November 2024",
-      location: "College Grounds",
+      title: "Rastrabhiman - Republic Day Celebration ",
+      description: "On the occasion of 26th January, EI Coordinators from all colleges came together to celebrate Republic Day with great enthusiasm and unity. The event included a vibrant dance performance that reflected patriotism and cultural pride. At the Traffic Park, EI coordinators also guided and interacted with people, sharing messages related to patriotism, civic sense, and national values. The celebration was filled with deshbhakti, teamwork, and a strong sense of responsibility towards the nation, making it a meaningful and memorable occasion for all.",
+      image: rashtrabimaan,
+      date: "January 2025",
+      location: "Traffic Park, Nagpur",
+      color: "from-accent to-accent/80",
+    },
+    {
+      title: "Light of Learning – Slum Area Visit",
+      description: "Under the Light of Learning initiative, EI Coordinators visited the slum area of Omkar Nagar in collaboration with Youth for Seva, Nagpur. During the visit, EI coordinators interacted with children and taught them basic alphabets, numbers, tables, and poems in an engaging way. They also communicated with the children’s parents to understand their needs and challenges, and made efforts to fulfill essential requirements wherever possible. Fun activities and games were organized to create a joyful learning environment. To support the children, books, stationery kits, biscuits, and chocolates were distributed. The visit aimed to spread education, care, and hope among the community.",
+      image: slum,
+      date: "July 2025",
+      location: "Omkar Nagar, Nagpur",
+      color: "from-accent to-accent/80",
+    },
+    {
+      title: "Induction Programme",
+      description: "The Engineering India (EI) Induction Programme was successfully conducted at St. Vincent Pallotti College of Engineering and Technology, Nagpur. During the session, EI coordinators interacted with the junior students and gave a brief introduction to Engineering India. A short overview of all EI events was shared, highlighting how EI is socially as well as technically active. The session helped juniors understand the vision, activities, and impact of EI. The juniors showed keen interest and enthusiasm to become EI members. The programme was graced by the presence of Pallotti EI Facility Coordinator, Ms. Mrunali Buradkar, making the session more informative and inspiring for the students.",
+      image: induction,
+      date: "August 2025",
+      location: "SVPCET, Nagpur",
+      color: "from-accent to-accent/80",
+    },
+    {
+      title: "Seva Sankalp – Old Age Orphanage Visit",
+      description: "Under the Seva Sankalp initiative, EI Coordinators visited an old age orphanage in collaboration with EI RBU. The coordinators spent quality time with the elderly, engaging in warm conversations and listening to their life experiences. Old songs were sung together, creating a nostalgic and joyful atmosphere. The elders shared their valuable experiences, and the coordinators also received meaningful guidance and insights from them. The visit concluded with a cake-cutting ceremony, celebrating togetherness, respect, and compassion, making the moment memorable for everyone involved.",
+      image: sevasankalp,
+      date: "October 2025",
+      location: "Nalanda Vastistar Vruddhashram, Binaki, Nagpur",
+      color: "from-accent to-accent/80",
+    },
+    {
+      title: "DIWALI MILAN",
+      description: "Diwali Milan was a joyful gathering where all EI coordinators from different colleges came together under one roof. The event focused on building strong coordination and bonding among everyone. Various fun activities were organized, creating a lively and positive atmosphere. Along with celebrations, it was a great opportunity for interaction, teamwork, and sharing experiences. The Diwali celebration was filled with happiness, unity, and festive spirit, making it a memorable event for all the coordinators involved. ",
+      image: diwalimilan,
+      date: "October 2025",
+      location: "Dattaji Didolar bhavan, Pande layout, New Sneh Nagar,Nagpur",
       color: "from-accent to-accent/80",
     },
   ];
 
-  const otherActivities = [
-    "Weekly Coding Sessions",
-    "Project Showcases",
-    "Industry Visits",
-    "Social Outreach Programs",
-    "Seminar Series",
-    "Tech Talks",
-  ];
+// const otherActivities = [
+//    "Weekly Coding Sessions",
+//    "Project Showcases",
+//    "Industry Visits",
+//    "Social Outreach Programs",
+//    "Seminar Series",
+//    "Tech Talks",
+//  ];
 
   return (
     <section id="activities" className="py-20 bg-muted/30">
