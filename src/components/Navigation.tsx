@@ -42,9 +42,11 @@ const Navigation = () => {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <div className="w-10 h-10 rounded-full bg-gradient-hero flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-xl">EI</span>
-            </div>
+                        <img 
+              src="/club-logo.png" 
+              alt="Engineering India Logo" 
+              className="w-10 h-10 object-contain" 
+            />
             <span className="text-xl font-bold text-foreground">
               Engineering India Club
             </span>
