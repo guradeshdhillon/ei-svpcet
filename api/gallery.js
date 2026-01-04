@@ -1,59 +1,37 @@
-const FOLDER_URL = 'https://drive.google.com/drive/folders/1naEpUA2MEiKsLnkyolh3Iw_KKIeFD06o?usp=sharing';
-const FOLDER_ID = '1naEpUA2MEiKsLnkyolh3Iw_KKIeFD06o';
+// Google Drive folder: https://drive.google.com/drive/folders/1naEpUA2MEiKsLnkyolh3Iw_KKIeFD06o?usp=sharing
+// Extract file IDs from the folder and add them here
+const DRIVE_FILES = [
+  '1Rva5X11M8EWTVvxSd1jd1BQ1FC_WV5r9',
+  '1ZvYsfoGoEgEicRqc376dC6LqBCuw3N1j', 
+  '1O6MRmP4AIJR7xLonRF7Mc2Vl3e3MeNNt',
+  '1ShZQrAL9GMVhZDRBM75UX7sv_iqdkkFW',
+  '1ZH7b4GG5pcAbf-gkju3P5U3ryWaz7wc_',
+  '1Ak8m-BG9fJn21FqnJ2y1QtCgOAFRIUbb',
+  '10uS1OA2ZtjcAsqjaYTmDNuMkqSTkayCk',
+  '1QBFmnG2BYvzZEIScd_l2U3AWUHwMChOW',
+  '12mL6tt23keP9dAw7fQjqnOtAq7u-y0TM',
+  '1Xd5y9M6x7tsAFbKA7B3bM2N-G0Nt8ok6'
+];
 
-async function fetchFolderFiles() {
-  try {
-    const response = await fetch(`https://drive.google.com/drive/folders/${FOLDER_ID}`, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-      }
-    });
-    
-    if (!response.ok) throw new Error('Failed to fetch folder');
-    
-    const html = await response.text();
-    const files = [];
-    
-    // Extract file data from the page
-    const filePattern = /\["([a-zA-Z0-9_-]{25,})","([^"]*)","([^"]*)"/g;
-    let match;
-    
-    while ((match = filePattern.exec(html)) !== null) {
-      const [, id, name, mimeType] = match;
-      
-      if (id && id !== FOLDER_ID && name && name.length > 0 && name.length < 100) {
-        const isVideo = mimeType && mimeType.includes('video');
-        const isImage = mimeType && mimeType.includes('image');
-        
-        if (isImage || isVideo) {
-          files.push({
-            id,
-            name: name.replace(/\.(jpg|jpeg|png|gif|mp4|mov|avi)$/i, ''),
-            type: isVideo ? 'video' : 'image',
-            thumbnailUrl: `https://lh3.googleusercontent.com/d/${id}=w400`,
-            previewReady: true
-          });
-        }
-      }
-    }
-    
-    return files.slice(0, 50); // Limit to 50 files
-  } catch (error) {
-    console.error('Folder fetch error:', error);
-    return [];
-  }
-}
-
-export default async function handler(req, res) {
+export default function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET');
   res.setHeader('Cache-Control', 'public, max-age=300');
   
-  if (req.method === 'OPTIONS') return res.status(200).end();
-  if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
 
-  const items = await fetchFolderFiles();
-  
-  console.log(`Fetched ${items.length} files from folder ${FOLDER_ID}`);
-  res.status(200).json({ items, total: items.length, folderUrl: FOLDER_URL });
+  const items = DRIVE_FILES.map((fileId, index) => ({
+    id: fileId,
+    name: `Event Photo ${index + 1}`,
+    type: 'image',
+    thumbnailUrl: `https://lh3.googleusercontent.com/d/${fileId}=w400`,
+    previewReady: true
+  }));
+
+  res.status(200).json({ 
+    items, 
+    total: items.length,
+    folderUrl: 'https://drive.google.com/drive/folders/1naEpUA2MEiKsLnkyolh3Iw_KKIeFD06o?usp=sharing'
+  });
 }
