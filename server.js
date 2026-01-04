@@ -12,7 +12,7 @@ app.use(express.json());
 let cache = { data: [], lastFetch: 0 };
 const CACHE_TTL = 2 * 60 * 1000; // 2 minutes
 
-// Optimized file list from Google Drive folder
+// Extended file list from Google Drive folder - these are working IDs
 const driveFiles = [
   '1Rva5X11M8EWTVvxSd1jd1BQ1FC_WV5r9', '1ZvYsfoGoEgEicRqc376dC6LqBCuw3N1j',
   '1O6MRmP4AIJR7xLonRF7Mc2Vl3e3MeNNt', '1ShZQrAL9GMVhZDRBM75UX7sv_iqdkkFW',
@@ -23,7 +23,17 @@ const driveFiles = [
   '1rGMspTgK37dEwiYGAEU2PlWK2K16lhiJ', '1XtGz_vK4LhF0qPBV6BuMNmsVh8Z0GOck',
   '1iIQ1c_OGS1a94SBVPQ9LmYks-scBz-oa', '1ruwdviDSbitnXCaEJnr6AFMUwRNe8spo',
   '1qUUXlHBXONuUkKtzI-eKNcFM-QSxgtU1', '1tLDwlGbYdsX8XuARJXnaeqAfKCinRTzn',
-  '1xUlPHE2LV4Pc-PHzWN257uFDkiMRDcUx', '1donQeZFGKcFfEdXRS9ayGl4EcogCKxEp'
+  '1xUlPHE2LV4Pc-PHzWN257uFDkiMRDcUx', '1donQeZFGKcFfEdXRS9ayGl4EcogCKxEp',
+  '1omw1n60Bb8HZO4017u47gs9HVS2WAPdr', '1oI4bSmV7xMPBWeWVAq6cJrAKpvask7gT',
+  '11dTYziUGslHrh42PdKFx9LKXB1NRQ6hZ', '1oZdh6iT6mUZ-ubtO8G8jZCl8whq5emEq',
+  '1NyoFDrzT7w3mejCyn8IcTby8qzIss0CL', '14qq3DedHRuNU_2X3aR-38xkA-XJ3woC3',
+  '1zMcxf1vlcMJna3_ySv2o75ROn1vBXn0a', '1jOh4-BOOqQ580NIUQ8X4SmNuIja2M5HS',
+  '1ItiB9_CYWYIBRA1KXheoh2bX3fr1I38A', '1hQlW_Oh_3DMKsKhJLOx7n2U6BnrrRAua',
+  '1wn0NyFuOq0goumfyapmjpBVek9GT3Hd6', '1Xx2jDi7HqV_eFyE50ADUiCIOs6IgXrzV',
+  '1SoGeNxhiYXvGSYlJJIhsGuZ8uvR34LJW', '1NjQgiIxVo3Sh1DJDfafSYRSPFz1LedIx',
+  '1WeunTzSGY2cPfi_xQ5lhM2AR83c4u60e', '1w5EFfvdF0IerBTcBDS3CAi0gG8_-vqeU',
+  '1boo1jutlboEEjbADemAXBL2LxR9trK9Y', '1wcCC0gY83UBwCfJTLlas3-tn95ey_weY',
+  '1M7_FwQvR6akRkLUqJrtfVivoOHd7TaiB', '1rWrulZRcmaZHOmKQa2UEdovuCVdGSS47'
 ];
 
 function getGalleryData() {
