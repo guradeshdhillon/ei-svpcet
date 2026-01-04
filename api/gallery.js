@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+export default function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET');
   res.setHeader('Cache-Control', 'public, max-age=300');
@@ -6,7 +6,6 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
-  // Direct file IDs from the Google Drive folder
   const files = [
     { id: '1Rva5X11M8EWTVvxSd1jd1BQ1FC_WV5r9', name: 'Workshop Session' },
     { id: '1ZvYsfoGoEgEicRqc376dC6LqBCuw3N1j', name: 'Technical Seminar' },
@@ -38,5 +37,6 @@ export default async function handler(req, res) {
     previewReady: true
   }));
 
+  console.log('API Response:', { items, total: items.length });
   res.status(200).json({ items, total: items.length });
 }

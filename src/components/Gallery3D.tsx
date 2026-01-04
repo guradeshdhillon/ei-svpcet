@@ -19,14 +19,23 @@ const Gallery3D = () => {
 
   const loadGallery = async () => {
     try {
+      console.log('Fetching gallery...');
       const response = await fetch('/api/gallery');
-      const data = await response.json();
+      console.log('Response status:', response.status);
       
-      if (data.items && Array.isArray(data.items)) {
+      const data = await response.json();
+      console.log('Gallery data:', data);
+      
+      if (data && data.items && Array.isArray(data.items)) {
+        console.log('Setting items:', data.items.length);
         setItems(data.items);
+      } else {
+        console.error('Invalid data structure:', data);
+        setItems([]);
       }
     } catch (error) {
       console.error('Gallery load failed:', error);
+      setItems([]);
     } finally {
       setLoading(false);
     }
@@ -39,6 +48,8 @@ const Gallery3D = () => {
   const closeModal = () => {
     setSelectedItem(null);
   };
+
+  console.log('Render - items count:', items.length, 'loading:', loading);
 
   if (loading) {
     return (
@@ -80,7 +91,13 @@ const Gallery3D = () => {
           {items.length === 0 ? (
             <div className="text-center py-12">
               <div className="text-gray-400 text-6xl mb-4">📷</div>
-              <p className="text-gray-500">No gallery items found</p>
+              <p className="text-gray-500 mb-4">No gallery items found</p>
+              <button 
+                onClick={loadGallery}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              >
+                Retry
+              </button>
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -96,6 +113,7 @@ const Gallery3D = () => {
                     className="w-full h-full object-cover"
                     loading="lazy"
                     onError={(e) => {
+                      console.error('Image failed to load:', item.id);
                       const target = e.target as HTMLImageElement;
                       target.style.display = 'none';
                       const parent = target.parentElement;
