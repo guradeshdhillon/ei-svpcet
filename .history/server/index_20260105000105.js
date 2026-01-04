@@ -662,6 +662,7 @@ app.get('/api/thumbnail/:id', async (req, res) => {
             console.warn(`Thumbnail fetch failed for ${fileId}:`, e.message);
         }
     }
+    }
 
     // Fallback to full stream (slower)
     streamFromDrive(fileId, req, res);

@@ -289,8 +289,8 @@ async function listDriveFiles(folderId) {
     console.log(`Using fallback scraper for ${folderId}`);
     try {
         const results = await fetchPublicFolderFiles(folderId);
-        // Cache scraped results for 10 minutes (longer than 2 to reduce load)
-        setCache(cacheKey, results, 10 * 60 * 1000);
+        // Shorter cache for scraped results to catch updates faster
+        setCache(cacheKey, results, 2 * 60 * 1000);
         return results;
     } catch (e) {
         throw e; // Propagate error so frontend shows "Error" state, not "Empty"
@@ -637,9 +637,7 @@ app.get('/api/thumbnail/:id', async (req, res) => {
     const fileId = req.params.id;
     const drive = await getDriveClient();
 
-    // Aggressive Cache for Thumbnails
-    res.setHeader('Cache-Control', 'public, max-age=86400'); // 24 hours
-
+    // Try to redirect to Google's generated thumbnail if possible (faster)
     if (drive) {
         try {
             const meta = await withRetry(() => drive.files.get({ fileId, fields: 'thumbnailLink, mimeType' }));

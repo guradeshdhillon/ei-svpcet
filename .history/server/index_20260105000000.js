@@ -637,9 +637,7 @@ app.get('/api/thumbnail/:id', async (req, res) => {
     const fileId = req.params.id;
     const drive = await getDriveClient();
 
-    // Aggressive Cache for Thumbnails
-    res.setHeader('Cache-Control', 'public, max-age=86400'); // 24 hours
-
+    // Try to redirect to Google's generated thumbnail if possible (faster)
     if (drive) {
         try {
             const meta = await withRetry(() => drive.files.get({ fileId, fields: 'thumbnailLink, mimeType' }));
