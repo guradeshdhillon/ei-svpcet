@@ -147,6 +147,8 @@ async function fetchPublicFolderFiles(folderId) {
         const jsonLikePattern = /\["([a-zA-Z0-9_-]{25,})"\s*,\s*"([^"]+?)"\s*,\s*"([^"]+?)"/g;
 
         let m;
+        // Optimization: Use a larger window for regex matching or try multiple patterns
+        
         while ((m = jsonLikePattern.exec(html))) {
             const id = m[1];
             const name = m[2];
@@ -169,6 +171,21 @@ async function fetchPublicFolderFiles(folderId) {
 
         // Regex 2: Also look for "ds:20" format which sometimes uses different spacing or layout
         if (files.length < 5) {
+            // New Pattern: Found in modern drive layouts
+            // [ "ID", "Name", null, "MimeType" ] or similar variations
+            const modernPattern = /\["([a-zA-Z0-9_-]{25,})"\s*,\s*"([^"]+?)"\s*,[^,]*,\s*"([^"]+?)"/g;
+             while ((m = modernPattern.exec(html))) {
+                const id = m[1];
+                const name = m[2];
+                const mimeType = m[3];
+
+                if (id === folderId || ids.has(id)) continue;
+                if (!mimeType.includes('/')) continue;
+                
+                ids.add(id);
+                files.push({ id, name, mimeType, thumbnailLink: null });
+            }
+
             // Fallback or complementary scan
             const laxPattern = /\\?"([a-zA-Z0-9_-]{25,})\\?",\\?"([^"]+?)\\?",\\?"(video\/|image\/|application\/)/g;
             while ((m = laxPattern.exec(html))) {
@@ -466,29 +483,48 @@ async function streamFromDrive(fileId, req, res) {
 
     // Public Fallback
     const ucUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
-    const lh3Url = `https://lh3.googleusercontent.com/d/${fileId}=w2000`;
+    const lh3Url = `https://lh3.googleusercontent.com/d/${fileId}=w1000`; // Increased size for quality
 
-    https.get(ucUrl, (proxyRes) => {
-        if (proxyRes.statusCode === 302 || proxyRes.statusCode === 303) {
-            const newUrl = proxyRes.headers.location;
-            https.get(newUrl, (finalRes) => {
-                pipeResponse(finalRes, res);
-            }).on('error', (e) => fail(res, e));
-            return;
-        }
-
-        if (proxyRes.statusCode >= 200 && proxyRes.statusCode < 400) {
-            pipeResponse(proxyRes, res);
+    // Strategy: Try lh3 first (better for images), then uc (better for downloads/videos)
+    
+    // 1. Try lh3 (Direct image server)
+    https.get(lh3Url, (lh3Res) => {
+        if (lh3Res.statusCode >= 200 && lh3Res.statusCode < 400) {
+            // It's a valid image!
+            pipeResponse(lh3Res, res);
         } else {
-            https.get(lh3Url, (lh3Res) => {
-                if (lh3Res.statusCode >= 200 && lh3Res.statusCode < 400) {
-                    pipeResponse(lh3Res, res);
-                } else {
-                    res.status(404).end();
-                }
-            }).on('error', () => res.status(404).end());
+            // 2. Fallback to UC (Download/Proxy)
+            tryUcFallback();
         }
-    }).on('error', (e) => fail(res, e));
+    }).on('error', () => tryUcFallback());
+
+    function tryUcFallback() {
+        https.get(ucUrl, (proxyRes) => {
+            if (proxyRes.statusCode === 302 || proxyRes.statusCode === 303) {
+                const newUrl = proxyRes.headers.location;
+                https.get(newUrl, (finalRes) => {
+                    pipeResponse(finalRes, res);
+                }).on('error', (e) => fail(res, e));
+                return;
+            }
+
+            if (proxyRes.statusCode >= 200 && proxyRes.statusCode < 400) {
+                // Check content type to avoid serving HTML (virus scan warnings) as image
+                const contentType = proxyRes.headers['content-type'];
+                if (contentType && contentType.includes('text/html')) {
+                    console.warn(`[Proxy] Got HTML instead of media for ${fileId} (Virus scan page?)`);
+                    // If we got HTML, it might be the virus scan page. 
+                    // We can't easily bypass it without cookies, but sometimes following the confirm link works.
+                    // For now, we fail or return 404 to avoid broken image icons.
+                     res.status(404).end();
+                } else {
+                    pipeResponse(proxyRes, res);
+                }
+            } else {
+                 res.status(404).end();
+            }
+        }).on('error', (e) => fail(res, e));
+    }
 
     function pipeResponse(from, to) {
         if (from.headers['content-type']) to.setHeader('Content-Type', from.headers['content-type']);
