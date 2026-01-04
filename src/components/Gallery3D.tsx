@@ -5,10 +5,16 @@ import { AlertCircle, Loader2 } from 'lucide-react';
 
 interface GalleryItem {
   id: string;
-  name: string;
-  type: 'image' | 'video';
-  thumbnailUrl: string;
-  url?: string; // Optional, usually same as thumbnail or higher res
+  name?: string;
+  caption?: string; // Backend uses caption sometimes
+  title?: string; // api/gallery.js uses title
+  type?: 'image' | 'video';
+  mediaType?: 'photo' | 'video'; // Backend uses mediaType
+  thumbnailUrl?: string;
+  thumbnail?: string; // Backend uses thumbnail
+  url?: string;
+  src?: string; // Backend uses src
+  full?: string; // api/gallery.js uses full
 }
 
 const Gallery3D = () => {
@@ -61,6 +67,11 @@ const Gallery3D = () => {
         setLoading(false);
       });
   }, []);
+
+  // Helper to get image source
+  const getThumbnail = (item: GalleryItem) => item.thumbnail || item.thumbnailUrl || item.src || item.url || item.full;
+  const getFullImage = (item: GalleryItem) => item.src || item.full || item.url || item.thumbnail || item.thumbnailUrl;
+  const getName = (item: GalleryItem) => item.name || item.caption || item.title || "Untitled";
 
   if (loading) {
     return (
@@ -116,8 +127,8 @@ const Gallery3D = () => {
                 onClick={() => setSelectedItem(item)}
               >
                 <img 
-                  src={item.thumbnailUrl || item.url} 
-                  alt={item.name} 
+                  src={getThumbnail(item)} 
+                  alt={getName(item)} 
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   onError={(e) => {
                     e.currentTarget.style.display = 'none';
@@ -126,7 +137,7 @@ const Gallery3D = () => {
                   }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-                  <p className="text-white font-medium truncate w-full">{item.name}</p>
+                  <p className="text-white font-medium truncate w-full">{getName(item)}</p>
                 </div>
               </div>
             ))}
@@ -141,12 +152,12 @@ const Gallery3D = () => {
             {selectedItem && (
               <>
                 <img 
-                  src={selectedItem.thumbnailUrl?.replace('=w400', '=w1200') || selectedItem.url} 
-                  alt={selectedItem.name} 
+                  src={getFullImage(selectedItem)} 
+                  alt={getName(selectedItem)} 
                   className="max-w-full max-h-full object-contain"
                 />
                 <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm p-4 text-center">
-                  <h3 className="text-xl font-semibold">{selectedItem.name}</h3>
+                  <h3 className="text-xl font-semibold">{getName(selectedItem)}</h3>
                 </div>
               </>
             )}
