@@ -10,8 +10,8 @@ const Footer = () => {
             </p>
           </div>
           <div className="text-center md:text-right text-sm opacity-90">
-            <p>© 2024 Engineering India Club. All rights reserved.</p>
-            <p className="mt-1">Made with passion by our tech team</p>
+            <p>© 2026 Engineering India Club. All rights reserved.</p>
+            <p className="mt-1">Made with passion by our Technical Team</p>
           </div>
         </div>
       </div>

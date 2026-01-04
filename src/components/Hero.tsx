@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
-import heroImage from "@/assets/hero-image.jpg";
+import heroImage from "@/assets/EI1.jpeg";
 
 const Hero = () => {
   const scrollToSection = (id: string) => {
@@ -18,7 +18,7 @@ const Hero = () => {
           src={heroImage}
           alt="Engineering India Club"
           className="w-full h-full object-cover"
-        />
+        />  
         <div className="absolute inset-0 bg-gradient-to-br from-primary/90 via-primary/70 to-secondary/80" />
       </div>
 
@@ -71,7 +71,7 @@ const Hero = () => {
           {/* Stats */}
           <div className="grid grid-cols-3 gap-4 md:gap-8 pt-12 max-w-2xl mx-auto">
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-              <div className="text-3xl md:text-4xl font-bold text-white mb-1">500+</div>
+              <div className="text-3xl md:text-4xl font-bold text-white mb-1">300+</div>
               <div className="text-sm text-white/80">Active Members</div>
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
