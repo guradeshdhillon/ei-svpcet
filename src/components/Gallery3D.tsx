@@ -1,10 +1,6 @@
-import { Suspense, useEffect, useRef, useState } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Sphere } from "@react-three/drei";
-import * as THREE from "three";
-import { Card, CardContent } from "./ui/card";
+import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
-import { AlertCircle, Loader2 } from "lucide-react";
+import { Loader2, AlertCircle } from "lucide-react";
 
 interface GalleryItem {
   id: number;
@@ -13,113 +9,6 @@ interface GalleryItem {
   type: string;
   url: string;
   thumbnailUrl?: string;
-  theta?: number;
-  phi?: number;
-}
-
-function generateSpherePosition(index: number, total: number) {
-  const goldenAngle = Math.PI * (3 - Math.sqrt(5));
-  const phi = Math.acos(1 - 2 * (index + 0.5) / total);
-  const theta = goldenAngle * index;
-  return { phi, theta };
-}
-
-function Earth() {
-  const ref = useRef<THREE.Mesh>(null);
-
-  useFrame((_, delta) => {
-    if (ref.current) {
-      ref.current.rotation.y += 0.2 * delta;
-    }
-  });
-
-  return (
-    <Sphere ref={ref} args={[1.8, 32, 32]}>
-      <meshStandardMaterial wireframe transparent opacity={0.1} color="#3b82f6" />
-    </Sphere>
-  );
-}
-
-function PhotoSphere({ item, onClick }: {
-  item: GalleryItem;
-  onClick: (item: GalleryItem) => void;
-}) {
-  const [hovered, setHovered] = useState(false);
-  const meshRef = useRef<THREE.Mesh>(null);
-  const groupRef = useRef<THREE.Group>(null);
-  const [texture, setTexture] = useState<THREE.Texture | null>(null);
-  
-  useEffect(() => {
-    const loader = new THREE.TextureLoader();
-    loader.crossOrigin = "anonymous";
-    
-    const imageUrl = item.thumbnailUrl || item.url;
-    loader.load(
-      imageUrl,
-      (loadedTexture) => {
-        loadedTexture.colorSpace = THREE.SRGBColorSpace;
-        setTexture(loadedTexture);
-      },
-      undefined,
-      (error) => {
-        console.error(`Failed to load texture for item ${item.id}:`, error);
-      }
-    );
-  }, [item.url, item.thumbnailUrl, item.id]);
-
-  const radius = 2.2;
-  const phi = item.phi ?? 0;
-  const theta = item.theta ?? 0;
-
-  const x = radius * Math.sin(phi) * Math.cos(theta);
-  const y = radius * Math.cos(phi);
-  const z = radius * Math.sin(phi) * Math.sin(theta);
-
-  useFrame((_, delta) => {
-    if (!groupRef.current) return;
-    
-    const targetScale = hovered ? 1.2 : 1;
-    groupRef.current.scale.lerp(
-      new THREE.Vector3(targetScale, targetScale, targetScale), 
-      5 * delta
-    );
-    
-    if (meshRef.current) {
-      meshRef.current.lookAt(0, 0, 0);
-    }
-  });
-
-  return (
-    <group ref={groupRef} position={[x, y, z]}>
-      <mesh
-        ref={meshRef}
-        onClick={() => onClick(item)}
-        onPointerOver={() => {
-          setHovered(true);
-          document.body.style.cursor = 'pointer';
-        }}
-        onPointerOut={() => {
-          setHovered(false);
-          document.body.style.cursor = 'default';
-        }}
-      >
-        <planeGeometry args={[0.6, 0.4]} />
-        {texture ? (
-          <meshStandardMaterial 
-            map={texture} 
-            transparent
-            opacity={hovered ? 1 : 0.9}
-          />
-        ) : (
-          <meshStandardMaterial 
-            color="#e5e7eb"
-            transparent
-            opacity={0.7}
-          />
-        )}
-      </mesh>
-    </group>
-  );
 }
 
 export default function Gallery3D() {
@@ -135,7 +24,6 @@ export default function Gallery3D() {
         setLoading(true);
         setError(null);
         
-        // Try API first, fallback to static JSON
         let response;
         try {
           response = await fetch('/api/gallery');
@@ -147,11 +35,7 @@ export default function Gallery3D() {
         
         const data = await response.json();
         if (Array.isArray(data)) {
-          const itemsWithPositions = data.map((item, index) => {
-            const { phi, theta } = generateSpherePosition(index, data.length);
-            return { ...item, phi, theta };
-          });
-          setItems(itemsWithPositions);
+          setItems(data);
         }
       } catch (err) {
         console.error('Failed to load gallery:', err);
@@ -168,16 +52,18 @@ export default function Gallery3D() {
 
   if (loading) {
     return (
-      <section className="py-20 bg-white">
-        <div className="max-w-6xl mx-auto px-4">
-          <Card className="border shadow-lg">
-            <CardContent className="p-0 h-[700px] flex items-center justify-center">
-              <div className="text-center">
-                <Loader2 className="w-12 h-12 mx-auto text-blue-600 mb-4 animate-spin" />
-                <p className="text-gray-600">Loading gallery...</p>
-              </div>
-            </CardContent>
-          </Card>
+      <section id="gallery" className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Event <span className="text-blue-600">Gallery</span></h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">Showcasing photos and videos from club activities, workshops, and events.</p>
+          </div>
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+              <Loader2 className="w-12 h-12 mx-auto text-blue-600 mb-4 animate-spin" />
+              <p className="text-gray-600">Loading gallery...</p>
+            </div>
+          </div>
         </div>
       </section>
     );
@@ -185,120 +71,96 @@ export default function Gallery3D() {
 
   if (error) {
     return (
-      <section className="py-20 bg-white">
-        <div className="max-w-6xl mx-auto px-4">
-          <Card className="border shadow-lg">
-            <CardContent className="p-0 h-[700px] flex items-center justify-center">
-              <div className="text-center">
-                <AlertCircle className="w-12 h-12 mx-auto text-red-500 mb-4" />
-                <p className="text-gray-600">{error}</p>
-              </div>
-            </CardContent>
-          </Card>
+      <section id="gallery" className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Event <span className="text-blue-600">Gallery</span></h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">Showcasing photos and videos from club activities, workshops, and events.</p>
+          </div>
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+              <AlertCircle className="w-12 h-12 mx-auto text-red-500 mb-4" />
+              <p className="text-gray-600">{error}</p>
+            </div>
+          </div>
         </div>
       </section>
     );
   }
 
   return (
-    <section className="py-20 bg-white">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">Gallery</h2>
-          <p className="text-gray-600">Explore our collection in 3D</p>
+    <section id="gallery" className="py-20 bg-white">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">Event <span className="text-blue-600">Gallery</span></h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">Showcasing photos and videos from club activities, workshops, and events.</p>
         </div>
-        
-        <Card className="border shadow-lg">
-          <CardContent className="p-0 h-[700px] relative">
-            {displayedItems.length === 0 ? (
-              <div className="w-full h-full flex items-center justify-center">
-                <div className="text-center">
-                  <AlertCircle className="w-12 h-12 mx-auto text-blue-500 mb-4" />
-                  <p className="text-gray-600">No images found</p>
-                </div>
-              </div>
-            ) : (
-              <Canvas 
-                dpr={[1, 2]} 
-                camera={{ position: [0, 0, 6], fov: 50 }} 
-                gl={{ antialias: true }}
-              >
-                <Suspense fallback={null}>
-                  <color attach="background" args={["#f8fafc"]} />
-                  
-                  <ambientLight intensity={0.6} />
-                  <directionalLight position={[10, 10, 5]} intensity={1} />
 
-                  <Earth />
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xl font-semibold text-gray-800">Events & Activities</h3>
+            <span className="text-sm text-gray-500">{items.length} items</span>
+          </div>
+          <p className="text-gray-600 text-sm mb-6">Highlights from our recent events.</p>
+          
+          <div className="mb-4">
+            <span className="text-sm font-medium text-gray-700">Gallery</span>
+            <span className="text-xs text-gray-500 ml-2">{items.length} items</span>
+          </div>
+        </div>
 
-                  {displayedItems.map((item) => (
-                    <PhotoSphere
-                      key={item.id}
-                      item={item}
-                      onClick={setSelected}
-                    />
-                  ))}
-
-                  <OrbitControls
-                    autoRotate
-                    autoRotateSpeed={0.5}
-                    enablePan={false}
-                    enableDamping
-                    dampingFactor={0.05}
-                    minDistance={4}
-                    maxDistance={12}
+        {displayedItems.length === 0 ? (
+          <div className="text-center py-12">
+            <AlertCircle className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+            <p className="text-gray-600">No images found</p>
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-8">
+              {displayedItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => setSelected(item)}
+                  className="group relative aspect-[4/3] rounded-lg overflow-hidden bg-gray-100 hover:shadow-lg transition-all duration-300 hover:scale-105"
+                >
+                  <img
+                    src={item.thumbnailUrl || item.url}
+                    alt={item.title}
+                    className="w-full h-full object-cover"
+                    loading={item.id <= 10 ? "eager" : "lazy"}
+                    onError={(e) => {
+                      const img = e.currentTarget as HTMLImageElement;
+                      img.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='240'%3E%3Crect width='100%25' height='100%25' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' fill='%236b7280' font-size='14' dominant-baseline='middle' text-anchor='middle'%3EImage unavailable%3C/text%3E%3C/svg%3E";
+                    }}
                   />
-                </Suspense>
-              </Canvas>
-            )}
-            
-            <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg">
-              <p className="text-sm text-gray-600">🖱️ Drag • 🔍 Zoom • 👆 Click</p>
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
+                </button>
+              ))}
             </div>
-          </CardContent>
 
-          {displayedItems.length > 0 && (
-            <div className="p-4 bg-gray-50 border-t">
-              <div className="flex gap-2 overflow-x-auto mb-4">
-                {displayedItems.slice(0, 10).map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => setSelected(item)}
-                    className="flex-shrink-0 w-20 h-16 rounded overflow-hidden shadow hover:shadow-md transition-all duration-300"
-                  >
-                    <img
-                      src={item.thumbnailUrl || item.url}
-                      alt={item.title}
-                      className="w-full h-full object-cover"
-                      loading="lazy"
-                    />
-                  </button>
-                ))}
-              </div>
-              
-              {items.length > visibleItems && (
+            {items.length > visibleItems && (
+              <div className="text-center">
                 <button
                   onClick={() => setVisibleItems(prev => prev + 20)}
-                  className="w-full py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
                 >
                   Load More ({items.length - visibleItems} remaining)
                 </button>
-              )}
-            </div>
-          )}
-        </Card>
+              </div>
+            )}
+          </>
+        )}
       </div>
 
       <Dialog open={!!selected} onOpenChange={() => setSelected(null)}>
-        <DialogContent className="max-w-4xl">
-          <DialogTitle>{selected?.title}</DialogTitle>
-          <div className="text-sm text-gray-500 mb-4">{selected?.date}</div>
-          <div className="flex justify-center">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
+          <DialogTitle className="sr-only">{selected?.title}</DialogTitle>
+          <div className="relative">
             {selected && (
               <img 
                 src={selected.url}
                 alt={selected.title}
-                className="max-w-full max-h-[70vh] object-contain rounded"
+                className="w-full max-h-[80vh] object-contain rounded"
                 loading="lazy"
               />
             )}

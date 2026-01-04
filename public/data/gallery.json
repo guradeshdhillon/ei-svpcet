@@ -1,16 +1,98 @@
-{
-  "sections": [
-    {
-      "id": "events",
-      "title": "Events & Activities",
-      "description": "Highlights from our recent events.",
-      "sources": [
-        {
-          "type": "gdrive-folder",
-          "label": "Gallery",
-          "folderUrl": "https://drive.google.com/drive/folders/1naEpUA2MEiKsLnkyolh3Iw_KKIeFD06o?usp=sharing"
-        }
-      ]
-    }
-  ]
-}
+[
+  {
+    "id": 1,
+    "title": "Gallery Image 1",
+    "date": "2024-01-01",
+    "type": "image",
+    "url": "https://lh3.googleusercontent.com/d/1Rva5X11M8EWTVvxSd1jd1BQ1FC_WV5r9=w1024",
+    "thumbnailUrl": "https://lh3.googleusercontent.com/d/1Rva5X11M8EWTVvxSd1jd1BQ1FC_WV5r9=w400"
+  },
+  {
+    "id": 2,
+    "title": "Gallery Image 2",
+    "date": "2024-01-01",
+    "type": "image",
+    "url": "https://lh3.googleusercontent.com/d/1ZvYsfoGoEgEicRqc376dC6LqBCuw3N1j=w1024",
+    "thumbnailUrl": "https://lh3.googleusercontent.com/d/1ZvYsfoGoEgEicRqc376dC6LqBCuw3N1j=w400"
+  },
+  {
+    "id": 3,
+    "title": "Gallery Image 3",
+    "date": "2024-01-01",
+    "type": "image",
+    "url": "https://lh3.googleusercontent.com/d/1O6MRmP4AIJR7xLonRF7Mc2Vl3e3MeNNt=w1024",
+    "thumbnailUrl": "https://lh3.googleusercontent.com/d/1O6MRmP4AIJR7xLonRF7Mc2Vl3e3MeNNt=w400"
+  },
+  {
+    "id": 4,
+    "title": "Gallery Image 4",
+    "date": "2024-01-01",
+    "type": "image",
+    "url": "https://lh3.googleusercontent.com/d/1ShZQrAL9GMVhZDRBM75UX7sv_iqdkkFW=w1024",
+    "thumbnailUrl": "https://lh3.googleusercontent.com/d/1ShZQrAL9GMVhZDRBM75UX7sv_iqdkkFW=w400"
+  },
+  {
+    "id": 5,
+    "title": "Gallery Image 5",
+    "date": "2024-01-01",
+    "type": "image",
+    "url": "https://lh3.googleusercontent.com/d/1ZH7b4GG5pcAbf-gkju3P5U3ryWaz7wc_=w1024",
+    "thumbnailUrl": "https://lh3.googleusercontent.com/d/1ZH7b4GG5pcAbf-gkju3P5U3ryWaz7wc_=w400"
+  },
+  {
+    "id": 6,
+    "title": "Gallery Image 6",
+    "date": "2024-01-01",
+    "type": "image",
+    "url": "https://lh3.googleusercontent.com/d/1Ak8m-BG9fJn21FqnJ2y1QtCgOAFRIUbb=w1024",
+    "thumbnailUrl": "https://lh3.googleusercontent.com/d/1Ak8m-BG9fJn21FqnJ2y1QtCgOAFRIUbb=w400"
+  },
+  {
+    "id": 7,
+    "title": "Gallery Image 7",
+    "date": "2024-01-01",
+    "type": "image",
+    "url": "https://lh3.googleusercontent.com/d/10uS1OA2ZtjcAsqjaYTmDNuMkqSTkayCk=w1024",
+    "thumbnailUrl": "https://lh3.googleusercontent.com/d/10uS1OA2ZtjcAsqjaYTmDNuMkqSTkayCk=w400"
+  },
+  {
+    "id": 8,
+    "title": "Gallery Image 8",
+    "date": "2024-01-01",
+    "type": "image",
+    "url": "https://lh3.googleusercontent.com/d/1QBFmnG2BYvzZEIScd_l2U3AWUHwMChOW=w1024",
+    "thumbnailUrl": "https://lh3.googleusercontent.com/d/1QBFmnG2BYvzZEIScd_l2U3AWUHwMChOW=w400"
+  },
+  {
+    "id": 9,
+    "title": "Gallery Image 9",
+    "date": "2024-01-01",
+    "type": "image",
+    "url": "https://lh3.googleusercontent.com/d/12mL6tt23keP9dAw7fQjqnOtAq7u-y0TM=w1024",
+    "thumbnailUrl": "https://lh3.googleusercontent.com/d/12mL6tt23keP9dAw7fQjqnOtAq7u-y0TM=w400"
+  },
+  {
+    "id": 10,
+    "title": "Gallery Image 10",
+    "date": "2024-01-01",
+    "type": "image",
+    "url": "https://lh3.googleusercontent.com/d/1Xd5y9M6x7tsAFbKA7B3bM2N-G0Nt8ok6=w1024",
+    "thumbnailUrl": "https://lh3.googleusercontent.com/d/1Xd5y9M6x7tsAFbKA7B3bM2N-G0Nt8ok6=w400"
+  },
+  {
+    "id": 11,
+    "title": "Gallery Image 11",
+    "date": "2024-01-01",
+    "type": "image",
+    "url": "https://lh3.googleusercontent.com/d/1NFIsqnT2JoRMC4s4xJAjxQ0jvB_AVBl6=w1024",
+    "thumbnailUrl": "https://lh3.googleusercontent.com/d/1NFIsqnT2JoRMC4s4xJAjxQ0jvB_AVBl6=w400"
+  },
+  {
+    "id": 12,
+    "title": "Gallery Image 12",
+    "date": "2024-01-01",
+    "type": "image",
+    "url": "https://lh3.googleusercontent.com/d/1mOfrMgE6y9P27q5ruPoZ1VMOxDRBqTyE=w1024",
+    "thumbnailUrl": "https://lh3.googleusercontent.com/d/1mOfrMgE6y9P27q5ruPoZ1VMOxDRBqTyE=w400"
+  }
+]
