@@ -214,28 +214,6 @@ async function fetchPublicFolderFiles(folderId) {
                 });
             }
         }
-        
-        // Strategy 3: Aggressive catch-all for IDs (last resort)
-        if (files.length < 5) {
-            // Looks for any string that resembles a Drive file ID in the JSON blob
-            // This might catch non-file IDs, but our media proxy will just fail for them (safe)
-            const catchAllPattern = /"([a-zA-Z0-9_-]{28,33})"/g; 
-            // Drive IDs are usually 33 chars, sometimes 28+
-            while ((m = catchAllPattern.exec(html))) {
-                const id = m[1];
-                if (id === folderId || ids.has(id)) continue;
-                // Filter out common non-ID strings if needed
-                if (id.includes('drive') || id.includes('google')) continue;
-                
-                ids.add(id);
-                files.push({
-                    id,
-                    name: 'Gallery Item',
-                    mimeType: 'image/jpeg', // Assume image
-                    thumbnailLink: null
-                });
-            }
-        }
 
         console.log(`[Scraper] Found ${files.length} items for folder ${folderId}`);
         return files;
