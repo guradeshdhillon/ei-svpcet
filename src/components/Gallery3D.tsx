@@ -1,17 +1,18 @@
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Sphere } from "@react-three/drei";
 import * as THREE from "three";
 import { Card, CardContent } from "./ui/card";
 import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Loader2 } from "lucide-react";
 
-interface EventPhoto {
+interface GalleryItem {
   id: number;
   title: string;
   date: string;
   type: string;
   url: string;
+  thumbnailUrl?: string;
   theta?: number;
   phi?: number;
 }
@@ -23,23 +24,12 @@ function generateSpherePosition(index: number, total: number) {
   return { phi, theta };
 }
 
-function resolveDriveUrl(url: string) {
-  if (!url.includes('drive.google.com')) return url;
-  
-  const match = url.match(/id=([a-zA-Z0-9_-]+)/);
-  if (match) {
-    const id = match[1];
-    return `https://lh3.googleusercontent.com/d/${id}=w800`;
-  }
-  return url;
-}
-
 function Earth() {
   const ref = useRef<THREE.Mesh>(null);
 
   useFrame((_, delta) => {
     if (ref.current) {
-      ref.current.rotation.y += 0.3 * delta;
+      ref.current.rotation.y += 0.2 * delta;
     }
   });
 
@@ -50,34 +40,36 @@ function Earth() {
   );
 }
 
-function PhotoSphere({ event, onClick }: {
-  event: EventPhoto;
-  onClick: (e: EventPhoto) => void;
+function PhotoSphere({ item, onClick }: {
+  item: GalleryItem;
+  onClick: (item: GalleryItem) => void;
 }) {
   const [hovered, setHovered] = useState(false);
   const meshRef = useRef<THREE.Mesh>(null);
   const groupRef = useRef<THREE.Group>(null);
+  const [texture, setTexture] = useState<THREE.Texture | null>(null);
   
-  const texture = useMemo(() => {
+  useEffect(() => {
     const loader = new THREE.TextureLoader();
     loader.crossOrigin = "anonymous";
     
-    const tex = loader.load(
-      resolveDriveUrl(event.url),
-      (loadedTex) => {
-        loadedTex.colorSpace = THREE.SRGBColorSpace;
+    const imageUrl = item.thumbnailUrl || item.url;
+    loader.load(
+      imageUrl,
+      (loadedTexture) => {
+        loadedTexture.colorSpace = THREE.SRGBColorSpace;
+        setTexture(loadedTexture);
       },
       undefined,
       (error) => {
-        console.error(`Failed to load image ${event.id}:`, error);
+        console.error(`Failed to load texture for item ${item.id}:`, error);
       }
     );
-    return tex;
-  }, [event.url, event.id]);
+  }, [item.url, item.thumbnailUrl, item.id]);
 
   const radius = 2.2;
-  const phi = event.phi ?? 0;
-  const theta = event.theta ?? 0;
+  const phi = item.phi ?? 0;
+  const theta = item.theta ?? 0;
 
   const x = radius * Math.sin(phi) * Math.cos(theta);
   const y = radius * Math.cos(phi);
@@ -101,7 +93,7 @@ function PhotoSphere({ event, onClick }: {
     <group ref={groupRef} position={[x, y, z]}>
       <mesh
         ref={meshRef}
-        onClick={() => onClick(event)}
+        onClick={() => onClick(item)}
         onPointerOver={() => {
           setHovered(true);
           document.body.style.cursor = 'pointer';
@@ -112,38 +104,58 @@ function PhotoSphere({ event, onClick }: {
         }}
       >
         <planeGeometry args={[0.6, 0.4]} />
-        <meshStandardMaterial 
-          map={texture} 
-          transparent
-          opacity={hovered ? 1 : 0.9}
-        />
+        {texture ? (
+          <meshStandardMaterial 
+            map={texture} 
+            transparent
+            opacity={hovered ? 1 : 0.9}
+          />
+        ) : (
+          <meshStandardMaterial 
+            color="#e5e7eb"
+            transparent
+            opacity={0.7}
+          />
+        )}
       </mesh>
     </group>
   );
 }
 
 export default function Gallery3D() {
-  const [events, setEvents] = useState<EventPhoto[]>([]);
-  const [selected, setSelected] = useState<EventPhoto | null>(null);
-  const [hovering, setHovering] = useState(false);
+  const [items, setItems] = useState<GalleryItem[]>([]);
+  const [selected, setSelected] = useState<GalleryItem | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [visibleItems, setVisibleItems] = useState(20);
 
   useEffect(() => {
     const loadGallery = async () => {
       try {
-        const response = await fetch("/data/gallery.json");
+        setLoading(true);
+        setError(null);
+        
+        // Try API first, fallback to static JSON
+        let response;
+        try {
+          response = await fetch('/api/gallery');
+        } catch {
+          response = await fetch('/data/gallery.json');
+        }
+        
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         
         const data = await response.json();
         if (Array.isArray(data)) {
-          const eventsWithPositions = data.map((event, index) => {
+          const itemsWithPositions = data.map((item, index) => {
             const { phi, theta } = generateSpherePosition(index, data.length);
-            return { ...event, phi, theta };
+            return { ...item, phi, theta };
           });
-          setEvents(eventsWithPositions);
+          setItems(itemsWithPositions);
         }
-      } catch (error) {
-        console.error("Failed to load gallery:", error);
+      } catch (err) {
+        console.error('Failed to load gallery:', err);
+        setError('Failed to load gallery');
       } finally {
         setLoading(false);
       }
@@ -152,6 +164,8 @@ export default function Gallery3D() {
     loadGallery();
   }, []);
 
+  const displayedItems = items.slice(0, visibleItems);
+
   if (loading) {
     return (
       <section className="py-20 bg-white">
@@ -159,8 +173,25 @@ export default function Gallery3D() {
           <Card className="border shadow-lg">
             <CardContent className="p-0 h-[700px] flex items-center justify-center">
               <div className="text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                <Loader2 className="w-12 h-12 mx-auto text-blue-600 mb-4 animate-spin" />
                 <p className="text-gray-600">Loading gallery...</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="py-20 bg-white">
+        <div className="max-w-6xl mx-auto px-4">
+          <Card className="border shadow-lg">
+            <CardContent className="p-0 h-[700px] flex items-center justify-center">
+              <div className="text-center">
+                <AlertCircle className="w-12 h-12 mx-auto text-red-500 mb-4" />
+                <p className="text-gray-600">{error}</p>
               </div>
             </CardContent>
           </Card>
@@ -172,9 +203,14 @@ export default function Gallery3D() {
   return (
     <section className="py-20 bg-white">
       <div className="max-w-6xl mx-auto px-4">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">Gallery</h2>
+          <p className="text-gray-600">Explore our collection in 3D</p>
+        </div>
+        
         <Card className="border shadow-lg">
           <CardContent className="p-0 h-[700px] relative">
-            {events.length === 0 ? (
+            {displayedItems.length === 0 ? (
               <div className="w-full h-full flex items-center justify-center">
                 <div className="text-center">
                   <AlertCircle className="w-12 h-12 mx-auto text-blue-500 mb-4" />
@@ -195,16 +231,16 @@ export default function Gallery3D() {
 
                   <Earth />
 
-                  {events.map((event) => (
+                  {displayedItems.map((item) => (
                     <PhotoSphere
-                      key={event.id}
-                      event={event}
+                      key={item.id}
+                      item={item}
                       onClick={setSelected}
                     />
                   ))}
 
                   <OrbitControls
-                    autoRotate={!hovering}
+                    autoRotate
                     autoRotateSpeed={0.5}
                     enablePan={false}
                     enableDamping
@@ -217,43 +253,53 @@ export default function Gallery3D() {
             )}
             
             <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg">
-              <p className="text-sm text-gray-600">🖱️ Drag to rotate • 🔍 Scroll to zoom • 👆 Click to view</p>
+              <p className="text-sm text-gray-600">🖱️ Drag • 🔍 Zoom • 👆 Click</p>
             </div>
           </CardContent>
 
-          {events.length > 0 && (
+          {displayedItems.length > 0 && (
             <div className="p-4 bg-gray-50 border-t">
-              <div className="flex gap-2 overflow-x-auto">
-                {events.map((event) => (
+              <div className="flex gap-2 overflow-x-auto mb-4">
+                {displayedItems.slice(0, 10).map((item) => (
                   <button
-                    key={event.id}
-                    onClick={() => setSelected(event)}
-                    className="flex-shrink-0 w-20 h-16 rounded overflow-hidden shadow hover:shadow-md transition-shadow"
+                    key={item.id}
+                    onClick={() => setSelected(item)}
+                    className="flex-shrink-0 w-20 h-16 rounded overflow-hidden shadow hover:shadow-md transition-all duration-300"
                   >
                     <img
-                      src={resolveDriveUrl(event.url)}
-                      alt={event.title}
+                      src={item.thumbnailUrl || item.url}
+                      alt={item.title}
                       className="w-full h-full object-cover"
                       loading="lazy"
                     />
                   </button>
                 ))}
               </div>
+              
+              {items.length > visibleItems && (
+                <button
+                  onClick={() => setVisibleItems(prev => prev + 20)}
+                  className="w-full py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                >
+                  Load More ({items.length - visibleItems} remaining)
+                </button>
+              )}
             </div>
           )}
         </Card>
       </div>
 
       <Dialog open={!!selected} onOpenChange={() => setSelected(null)}>
-        <DialogContent className="max-w-3xl">
+        <DialogContent className="max-w-4xl">
           <DialogTitle>{selected?.title}</DialogTitle>
           <div className="text-sm text-gray-500 mb-4">{selected?.date}</div>
           <div className="flex justify-center">
             {selected && (
               <img 
-                src={resolveDriveUrl(selected.url)}
+                src={selected.url}
                 alt={selected.title}
                 className="max-w-full max-h-[70vh] object-contain rounded"
+                loading="lazy"
               />
             )}
           </div>
