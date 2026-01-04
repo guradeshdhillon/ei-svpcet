@@ -297,6 +297,51 @@ function transformFileToMedia(file) {
 
 // --- Routes ---
 
+const FALLBACK_ITEMS = [
+    {
+      id: '1Rva5X11M8EWTVvxSd1jd1BQ1FC_WV5r9',
+      name: 'Workshop Session',
+      mediaType: 'photo',
+      thumbnail: 'https://lh3.googleusercontent.com/d/1Rva5X11M8EWTVvxSd1jd1BQ1FC_WV5r9=w400',
+      src: 'https://lh3.googleusercontent.com/d/1Rva5X11M8EWTVvxSd1jd1BQ1FC_WV5r9=w2000'
+    },
+    {
+      id: '1ZvYsfoGoEgEicRqc376dC6LqBCuw3N1j',
+      name: 'Technical Seminar',
+      mediaType: 'photo',
+      thumbnail: 'https://lh3.googleusercontent.com/d/1ZvYsfoGoEgEicRqc376dC6LqBCuw3N1j=w400',
+      src: 'https://lh3.googleusercontent.com/d/1ZvYsfoGoEgEicRqc376dC6LqBCuw3N1j=w2000'
+    },
+    {
+      id: '1O6MRmP4AIJR7xLonRF7Mc2Vl3e3MeNNt',
+      name: 'Innovation Lab',
+      mediaType: 'photo',
+      thumbnail: 'https://lh3.googleusercontent.com/d/1O6MRmP4AIJR7xLonRF7Mc2Vl3e3MeNNt=w400',
+      src: 'https://lh3.googleusercontent.com/d/1O6MRmP4AIJR7xLonRF7Mc2Vl3e3MeNNt=w2000'
+    },
+    {
+      id: '1ShZQrAL9GMVhZDRBM75UX7sv_iqdkkFW',
+      name: 'Project Demo',
+      mediaType: 'photo',
+      thumbnail: 'https://lh3.googleusercontent.com/d/1ShZQrAL9GMVhZDRBM75UX7sv_iqdkkFW=w400',
+      src: 'https://lh3.googleusercontent.com/d/1ShZQrAL9GMVhZDRBM75UX7sv_iqdkkFW=w2000'
+    },
+    {
+      id: '1ZH7b4GG5pcAbf-gkju3P5U3ryWaz7wc_',
+      name: 'Coding Competition',
+      mediaType: 'photo',
+      thumbnail: 'https://lh3.googleusercontent.com/d/1ZH7b4GG5pcAbf-gkju3P5U3ryWaz7wc_=w400',
+      src: 'https://lh3.googleusercontent.com/d/1ZH7b4GG5pcAbf-gkju3P5U3ryWaz7wc_=w2000'
+    },
+    {
+      id: '1Ak8m-BG9fJn21FqnJ2y1QtCgOAFRIUbb',
+      name: 'Tech Talk',
+      mediaType: 'photo',
+      thumbnail: 'https://lh3.googleusercontent.com/d/1Ak8m-BG9fJn21FqnJ2y1QtCgOAFRIUbb=w400',
+      src: 'https://lh3.googleusercontent.com/d/1Ak8m-BG9fJn21FqnJ2y1QtCgOAFRIUbb=w2000'
+    }
+];
+
 app.get('/api/gallery', async (req, res) => {
     try {
         const publicConfigPath = path.join(__dirname, '..', 'public', 'data', 'gallery.json');
@@ -306,7 +351,8 @@ app.get('/api/gallery', async (req, res) => {
             conf = JSON.parse(confRaw);
         } catch (e) {
             console.error("Failed to read gallery.json", e);
-            return res.status(500).json({ error: "Configuration missing" });
+            // Fallback immediately if config fails
+            return res.json({ items: FALLBACK_ITEMS });
         }
 
         // Config hash for caching
@@ -342,12 +388,30 @@ app.get('/api/gallery', async (req, res) => {
             })
         );
 
+        // Check if we actually got any items
+        const hasItems = outSections.some(s => s.sources.some(src => src.items && src.items.length > 0));
+        
+        if (!hasItems) {
+            console.warn("⚠️ No items found in configured folders. Serving fallback data.");
+            // Serve fallback structure if scraping failed
+            return res.json({ 
+                sections: [{
+                    title: "Gallery",
+                    sources: [{
+                        label: "Featured Events (Fallback)",
+                        items: FALLBACK_ITEMS
+                    }]
+                }] 
+            });
+        }
+
         const payload = { sections: outSections, fetchedAt: new Date().toISOString() };
         setCache(fullCacheKey, payload, 60 * 1000);
         res.json(payload);
     } catch (err) {
         console.error('Error /api/gallery', err);
-        res.status(500).json({ error: String(err) });
+        // Final safety net
+        res.json({ items: FALLBACK_ITEMS });
     }
 });
 
