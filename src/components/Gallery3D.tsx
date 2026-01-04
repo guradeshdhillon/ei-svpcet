@@ -119,11 +119,11 @@ const Gallery3D = () => {
             <p className="text-gray-500">No images found in the gallery.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
             {items.map((item) => (
               <div 
                 key={item.id} 
-                className="group relative aspect-square bg-gray-200 rounded-xl overflow-hidden cursor-pointer shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                className="group relative aspect-square bg-gray-200 rounded-lg overflow-hidden cursor-pointer shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1"
                 onClick={() => setSelectedItem(item)}
               >
                 <img 
@@ -133,11 +133,11 @@ const Gallery3D = () => {
                   onError={(e) => {
                     e.currentTarget.style.display = 'none';
                     e.currentTarget.parentElement!.classList.add('flex', 'items-center', 'justify-center');
-                    e.currentTarget.parentElement!.innerHTML = `<span class="text-gray-400 text-sm">Image not available</span>`;
+                    e.currentTarget.parentElement!.innerHTML = `<span class="text-gray-400 text-xs text-center p-2">Image not available</span>`;
                   }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-                  <p className="text-white font-medium truncate w-full">{getName(item)}</p>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-2">
+                  <p className="text-white text-xs font-medium truncate w-full">{getName(item)}</p>
                 </div>
               </div>
             ))}

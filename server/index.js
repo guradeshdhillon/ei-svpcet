@@ -170,22 +170,22 @@ async function fetchPublicFolderFiles(folderId) {
         }
 
         // Regex 2: Also look for "ds:20" format which sometimes uses different spacing or layout
+        // New Pattern: Found in modern drive layouts
+        // [ "ID", "Name", null, "MimeType" ] or similar variations
+        const modernPattern = /\["([a-zA-Z0-9_-]{25,})"\s*,\s*"([^"]+?)"\s*,[^,]*,\s*"([^"]+?)"/g;
+        while ((m = modernPattern.exec(html))) {
+            const id = m[1];
+            const name = m[2];
+            const mimeType = m[3];
+
+            if (id === folderId || ids.has(id)) continue;
+            if (!mimeType.includes('/')) continue;
+            
+            ids.add(id);
+            files.push({ id, name, mimeType, thumbnailLink: null });
+        }
+
         if (files.length < 5) {
-            // New Pattern: Found in modern drive layouts
-            // [ "ID", "Name", null, "MimeType" ] or similar variations
-            const modernPattern = /\["([a-zA-Z0-9_-]{25,})"\s*,\s*"([^"]+?)"\s*,[^,]*,\s*"([^"]+?)"/g;
-             while ((m = modernPattern.exec(html))) {
-                const id = m[1];
-                const name = m[2];
-                const mimeType = m[3];
-
-                if (id === folderId || ids.has(id)) continue;
-                if (!mimeType.includes('/')) continue;
-                
-                ids.add(id);
-                files.push({ id, name, mimeType, thumbnailLink: null });
-            }
-
             // Fallback or complementary scan
             const laxPattern = /\\?"([a-zA-Z0-9_-]{25,})\\?",\\?"([^"]+?)\\?",\\?"(video\/|image\/|application\/)/g;
             while ((m = laxPattern.exec(html))) {
