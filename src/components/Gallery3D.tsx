@@ -1,4 +1,24 @@
 import React, { useState, useEffect } from 'react';
+import event1 from '@/assets/event1.jpg';
+import event2 from '@/assets/event2.jpg';
+import event3 from '@/assets/event3.jpg';
+import event4 from '@/assets/event4.jpg';
+import event5 from '@/assets/event5.jpg';
+import event6 from '@/assets/event6.jpg';
+import event7 from '@/assets/event7.jpg';
+import event8 from '@/assets/event8.jpg';
+import event9 from '@/assets/event9.jpg';
+import event10 from '@/assets/event10.jpg';
+import event11 from '@/assets/event11.jpg';
+import event12 from '@/assets/event12.jpg';
+import event13 from '@/assets/event13.jpg';
+import event14 from '@/assets/event14.jpg';
+import event15 from '@/assets/event15.jpg';
+import event16 from '@/assets/event16.jpg';
+import hackathon from '@/assets/hackathon.jpg';
+import techfest from '@/assets/techfest.jpg';
+import workshop from '@/assets/workshop.jpg';
+import ei1 from '@/assets/EI1.jpeg';
 
 interface MediaItem {
   id: string;
@@ -11,54 +31,47 @@ interface MediaItem {
 const Gallery3D = () => {
   const [items, setItems] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [visibleCount, setVisibleCount] = useState(20);
+  const [visibleCount, setVisibleCount] = useState(12);
   const [selectedImage, setSelectedImage] = useState<MediaItem | null>(null);
 
   useEffect(() => {
     const loadGalleryItems = () => {
-      try {
-        // Real Google Drive file IDs from your folder
-        const driveFileIds = [
-          '1Rva5X11M8EWTVvxSd1jd1BQ1FC_WV5r9',
-          '1ZvYsfoGoEgEicRqc376dC6LqBCuw3N1j',
-          '1O6MRmP4AIJR7xLonRF7Mc2Vl3e3MeNNt',
-          '1ShZQrAL9GMVhZDRBM75UX7sv_iqdkkFW',
-          '1ZH7b4GG5pcAbf-gkju3P5U3ryWaz7wc_',
-          '1Ak8m-BG9fJn21FqnJ2y1QtCgOAFRIUbb',
-          '10uS1OA2ZtjcAsqjaYTmDNuMkqSTkayCk',
-          '1QBFmnG2BYvzZEIScd_l2U3AWUHwMChOW',
-          '12mL6tt23keP9dAw7fQjqnOtAq7u-y0TM',
-          '1Xd5y9M6x7tsAFbKA7B3bM2N-G0Nt8ok6',
-          '1NFIsqnT2JoRMC4s4xJAjxQ0jvB_AVBl6',
-          '1mOfrMgE6y9P27q5ruPoZ1VMOxDRBqTyE',
-          '1rGMspTgK37dEwiYGAEU2PlWK2K16lhiJ',
-          '1XtGz_vK4LhF0qPBV6BuMNmsVh8Z0GOck',
-          '1iIQ1c_OGS1a94SBVPQ9LmYks-scBz-oa',
-          '1ruwdviDSbitnXCaEJnr6AFMUwRNe8spo',
-          '1qUUXlHBXONuUkKtzI-eKNcFM-QSxgtU1',
-          '1tLDwlGbYdsX8XuARJXnaeqAfKCinRTzn',
-          '1xUlPHE2LV4Pc-PHzWN257uFDkiMRDcUx',
-          '1donQeZFGKcFfEdXRS9ayGl4EcogCKxEp'
-        ];
+      const localAssets = [
+        { src: event1, title: 'Engineering Workshop' },
+        { src: event2, title: 'Technical Seminar' },
+        { src: event3, title: 'Innovation Lab' },
+        { src: event4, title: 'Project Exhibition' },
+        { src: event5, title: 'Coding Competition' },
+        { src: event6, title: 'Tech Talk' },
+        { src: event7, title: 'Robotics Workshop' },
+        { src: event8, title: 'AI/ML Session' },
+        { src: event9, title: 'Hackathon Prep' },
+        { src: event10, title: 'Industry Visit' },
+        { src: event11, title: 'Research Presentation' },
+        { src: event12, title: 'Team Building' },
+        { src: event13, title: 'Guest Lecture' },
+        { src: event14, title: 'Project Demo' },
+        { src: event15, title: 'Technical Quiz' },
+        { src: event16, title: 'Innovation Fair' },
+        { src: hackathon, title: 'Annual Hackathon' },
+        { src: techfest, title: 'Tech Festival' },
+        { src: workshop, title: 'Hands-on Workshop' },
+        { src: ei1, title: 'Engineering India Club' }
+      ];
 
-        const galleryItems: MediaItem[] = driveFileIds.map((id, index) => ({
-          id,
-          type: 'image',
-          thumbnail: `https://lh3.googleusercontent.com/d/${id}=w400`,
-          full: `https://lh3.googleusercontent.com/d/${id}=w1024`,
-          title: `Event Photo ${index + 1}`
-        }));
+      const galleryItems: MediaItem[] = localAssets.map((asset, index) => ({
+        id: `local-${index}`,
+        type: 'image',
+        thumbnail: asset.src,
+        full: asset.src,
+        title: asset.title
+      }));
 
-        setItems(galleryItems);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error loading gallery:', error);
-        setLoading(false);
-      }
+      setItems(galleryItems);
+      setLoading(false);
     };
 
-    // Simulate loading delay
-    setTimeout(loadGalleryItems, 500);
+    loadGalleryItems();
   }, []);
 
   const handleImageClick = (item: MediaItem) => {
@@ -91,7 +104,7 @@ const Gallery3D = () => {
               Event <span className="text-blue-600">Gallery</span>
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Showcasing photos and videos from club activities, workshops, and events.
+              Showcasing photos from club activities, workshops, and events.
             </p>
           </div>
 
@@ -99,12 +112,12 @@ const Gallery3D = () => {
             <p className="text-sm text-gray-500">Gallery • {items.length} items</p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {items.slice(0, visibleCount).map((item, index) => (
               <div
                 key={item.id}
                 onClick={() => handleImageClick(item)}
-                className="aspect-[4/3] rounded-lg overflow-hidden bg-gray-100 hover:shadow-lg transition-all duration-300 cursor-pointer hover:scale-105"
+                className="aspect-square rounded-lg overflow-hidden bg-gray-100 hover:shadow-lg transition-all duration-300 cursor-pointer hover:scale-105"
               >
                 <img
                   src={item.thumbnail}
@@ -123,7 +136,7 @@ const Gallery3D = () => {
           {items.length > visibleCount && (
             <div className="text-center mt-8">
               <button
-                onClick={() => setVisibleCount(prev => Math.min(prev + 20, items.length))}
+                onClick={() => setVisibleCount(prev => Math.min(prev + 12, items.length))}
                 className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Load More ({items.length - visibleCount} remaining)
@@ -133,7 +146,6 @@ const Gallery3D = () => {
         </div>
       </section>
 
-      {/* Modal */}
       {selectedImage && (
         <div 
           className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
