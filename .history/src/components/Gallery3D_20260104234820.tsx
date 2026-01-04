@@ -73,50 +73,6 @@ const Gallery3D = () => {
   const getFullImage = (item: GalleryItem) => item.src || item.full || item.url || item.thumbnail || item.thumbnailUrl;
   const getName = (item: GalleryItem) => item.name || item.caption || item.title || "Untitled";
 
-  // Gallery Image Component with Loading State
-  const GalleryImage = ({ item, onClick }: { item: GalleryItem; onClick: () => void }) => {
-    const [loaded, setLoaded] = useState(false);
-    const [hasError, setHasError] = useState(false);
-
-    if (hasError) return null; // Hide broken images completely from masonry to avoid gaps
-
-    return (
-      <div 
-        className="break-inside-avoid mb-4 group relative rounded-lg overflow-hidden cursor-pointer shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-gray-100"
-        onClick={onClick}
-      >
-        <div className={`relative w-full ${!loaded ? 'min-h-[200px] animate-pulse' : ''}`}>
-          {!loaded && (
-             <div className="absolute inset-0 flex items-center justify-center text-slate-300">
-                <Loader2 className="w-6 h-6 animate-spin" />
-             </div>
-          )}
-          <img 
-            src={getThumbnail(item)} 
-            alt={getName(item)} 
-            loading="lazy"
-            onLoad={() => setLoaded(true)}
-            onError={() => setHasError(true)}
-            className={`w-full h-auto object-cover transition-all duration-700 ${
-              loaded ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
-            }`}
-          />
-          
-          {/* Video Indicator */}
-          {(item.type === 'video' || item.mediaType === 'video') && (
-            <div className="absolute top-2 right-2 bg-black/50 p-1.5 rounded-full backdrop-blur-sm">
-               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="white" stroke="currentColor" strokeWidth="0" className="text-white"><path d="M8 5v14l11-7z"/></svg>
-            </div>
-          )}
-
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
-            <p className="text-white text-sm font-medium line-clamp-2">{getName(item)}</p>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   if (loading) {
     return (
       <section className="py-20 bg-slate-50 min-h-[50vh] flex items-center justify-center">
@@ -147,7 +103,7 @@ const Gallery3D = () => {
   }
 
   return (
-    <section id="gallery" className="py-20 bg-slate-50 min-h-screen">
+    <section id="gallery" className="py-20 bg-slate-50">
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold mb-4">
@@ -163,13 +119,27 @@ const Gallery3D = () => {
             <p className="text-gray-500">No images found in the gallery.</p>
           </div>
         ) : (
-          <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 gap-4 space-y-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
             {items.map((item) => (
-              <GalleryImage 
+              <div 
                 key={item.id} 
-                item={item} 
-                onClick={() => setSelectedItem(item)} 
-              />
+                className="group relative aspect-square bg-gray-200 rounded-lg overflow-hidden cursor-pointer shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1"
+                onClick={() => setSelectedItem(item)}
+              >
+                <img 
+                  src={getThumbnail(item)} 
+                  alt={getName(item)} 
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.parentElement!.classList.add('flex', 'items-center', 'justify-center');
+                    e.currentTarget.parentElement!.innerHTML = `<span class="text-gray-400 text-xs text-center p-2">Image not available</span>`;
+                  }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-2">
+                  <p className="text-white text-xs font-medium truncate w-full">{getName(item)}</p>
+                </div>
+              </div>
             ))}
           </div>
         )}

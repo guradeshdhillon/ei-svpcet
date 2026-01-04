@@ -147,8 +147,6 @@ async function fetchPublicFolderFiles(folderId) {
         const jsonLikePattern = /\["([a-zA-Z0-9_-]{25,})"\s*,\s*"([^"]+?)"\s*,\s*"([^"]+?)"/g;
 
         let m;
-        // Optimization: Use a larger window for regex matching or try multiple patterns
-        
         while ((m = jsonLikePattern.exec(html))) {
             const id = m[1];
             const name = m[2];
@@ -170,21 +168,6 @@ async function fetchPublicFolderFiles(folderId) {
         }
 
         // Regex 2: Also look for "ds:20" format which sometimes uses different spacing or layout
-        // New Pattern: Found in modern drive layouts
-        // [ "ID", "Name", null, "MimeType" ] or similar variations
-        const modernPattern = /\["([a-zA-Z0-9_-]{25,})"\s*,\s*"([^"]+?)"\s*,[^,]*,\s*"([^"]+?)"/g;
-        while ((m = modernPattern.exec(html))) {
-            const id = m[1];
-            const name = m[2];
-            const mimeType = m[3];
-
-            if (id === folderId || ids.has(id)) continue;
-            if (!mimeType.includes('/')) continue;
-            
-            ids.add(id);
-            files.push({ id, name, mimeType, thumbnailLink: null });
-        }
-
         if (files.length < 5) {
             // Fallback or complementary scan
             const laxPattern = /\\?"([a-zA-Z0-9_-]{25,})\\?",\\?"([^"]+?)\\?",\\?"(video\/|image\/|application\/)/g;
@@ -319,43 +302,43 @@ const FALLBACK_ITEMS = [
       id: '1Rva5X11M8EWTVvxSd1jd1BQ1FC_WV5r9',
       name: 'Workshop Session',
       mediaType: 'photo',
-      thumbnail: '/api/thumbnail/1Rva5X11M8EWTVvxSd1jd1BQ1FC_WV5r9',
-      src: '/api/media/1Rva5X11M8EWTVvxSd1jd1BQ1FC_WV5r9'
+      thumbnail: 'https://lh3.googleusercontent.com/d/1Rva5X11M8EWTVvxSd1jd1BQ1FC_WV5r9=w400',
+      src: 'https://lh3.googleusercontent.com/d/1Rva5X11M8EWTVvxSd1jd1BQ1FC_WV5r9=w2000'
     },
     {
       id: '1ZvYsfoGoEgEicRqc376dC6LqBCuw3N1j',
       name: 'Technical Seminar',
       mediaType: 'photo',
-      thumbnail: '/api/thumbnail/1ZvYsfoGoEgEicRqc376dC6LqBCuw3N1j',
-      src: '/api/media/1ZvYsfoGoEgEicRqc376dC6LqBCuw3N1j'
+      thumbnail: 'https://lh3.googleusercontent.com/d/1ZvYsfoGoEgEicRqc376dC6LqBCuw3N1j=w400',
+      src: 'https://lh3.googleusercontent.com/d/1ZvYsfoGoEgEicRqc376dC6LqBCuw3N1j=w2000'
     },
     {
       id: '1O6MRmP4AIJR7xLonRF7Mc2Vl3e3MeNNt',
       name: 'Innovation Lab',
       mediaType: 'photo',
-      thumbnail: '/api/thumbnail/1O6MRmP4AIJR7xLonRF7Mc2Vl3e3MeNNt',
-      src: '/api/media/1O6MRmP4AIJR7xLonRF7Mc2Vl3e3MeNNt'
+      thumbnail: 'https://lh3.googleusercontent.com/d/1O6MRmP4AIJR7xLonRF7Mc2Vl3e3MeNNt=w400',
+      src: 'https://lh3.googleusercontent.com/d/1O6MRmP4AIJR7xLonRF7Mc2Vl3e3MeNNt=w2000'
     },
     {
       id: '1ShZQrAL9GMVhZDRBM75UX7sv_iqdkkFW',
       name: 'Project Demo',
       mediaType: 'photo',
-      thumbnail: '/api/thumbnail/1ShZQrAL9GMVhZDRBM75UX7sv_iqdkkFW',
-      src: '/api/media/1ShZQrAL9GMVhZDRBM75UX7sv_iqdkkFW'
+      thumbnail: 'https://lh3.googleusercontent.com/d/1ShZQrAL9GMVhZDRBM75UX7sv_iqdkkFW=w400',
+      src: 'https://lh3.googleusercontent.com/d/1ShZQrAL9GMVhZDRBM75UX7sv_iqdkkFW=w2000'
     },
     {
       id: '1ZH7b4GG5pcAbf-gkju3P5U3ryWaz7wc_',
       name: 'Coding Competition',
       mediaType: 'photo',
-      thumbnail: '/api/thumbnail/1ZH7b4GG5pcAbf-gkju3P5U3ryWaz7wc_',
-      src: '/api/media/1ZH7b4GG5pcAbf-gkju3P5U3ryWaz7wc_'
+      thumbnail: 'https://lh3.googleusercontent.com/d/1ZH7b4GG5pcAbf-gkju3P5U3ryWaz7wc_=w400',
+      src: 'https://lh3.googleusercontent.com/d/1ZH7b4GG5pcAbf-gkju3P5U3ryWaz7wc_=w2000'
     },
     {
       id: '1Ak8m-BG9fJn21FqnJ2y1QtCgOAFRIUbb',
       name: 'Tech Talk',
       mediaType: 'photo',
-      thumbnail: '/api/thumbnail/1Ak8m-BG9fJn21FqnJ2y1QtCgOAFRIUbb',
-      src: '/api/media/1Ak8m-BG9fJn21FqnJ2y1QtCgOAFRIUbb'
+      thumbnail: 'https://lh3.googleusercontent.com/d/1Ak8m-BG9fJn21FqnJ2y1QtCgOAFRIUbb=w400',
+      src: 'https://lh3.googleusercontent.com/d/1Ak8m-BG9fJn21FqnJ2y1QtCgOAFRIUbb=w2000'
     }
 ];
 
