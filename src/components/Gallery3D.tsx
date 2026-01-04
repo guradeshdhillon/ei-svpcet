@@ -1,24 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import event1 from '@/assets/event1.jpg';
-import event2 from '@/assets/event2.jpg';
-import event3 from '@/assets/event3.jpg';
-import event4 from '@/assets/event4.jpg';
-import event5 from '@/assets/event5.jpg';
-import event6 from '@/assets/event6.jpg';
-import event7 from '@/assets/event7.jpg';
-import event8 from '@/assets/event8.jpg';
-import event9 from '@/assets/event9.jpg';
-import event10 from '@/assets/event10.jpg';
-import event11 from '@/assets/event11.jpg';
-import event12 from '@/assets/event12.jpg';
-import event13 from '@/assets/event13.jpg';
-import event14 from '@/assets/event14.jpg';
-import event15 from '@/assets/event15.jpg';
-import event16 from '@/assets/event16.jpg';
-import hackathon from '@/assets/hackathon.jpg';
-import techfest from '@/assets/techfest.jpg';
-import workshop from '@/assets/workshop.jpg';
-import ei1 from '@/assets/EI1.jpeg';
 
 interface MediaItem {
   id: string;
@@ -35,28 +15,38 @@ const Gallery3D = () => {
   const [selectedImage, setSelectedImage] = useState<MediaItem | null>(null);
 
   useEffect(() => {
-    const loadGalleryItems = () => {
+    const loadGalleryItems = async () => {
+      try {
+        // Try API first (works in production)
+        const response = await fetch('/api/gallery');
+        if (response.ok) {
+          const data = await response.json();
+          setItems(data);
+          setLoading(false);
+          return;
+        }
+      } catch (error) {
+        console.log('API not available, using local assets');
+      }
+
+      // Fallback to local assets for development
       const localAssets = [
-        { src: event1, title: 'Engineering Workshop' },
-        { src: event2, title: 'Technical Seminar' },
-        { src: event3, title: 'Innovation Lab' },
-        { src: event4, title: 'Project Exhibition' },
-        { src: event5, title: 'Coding Competition' },
-        { src: event6, title: 'Tech Talk' },
-        { src: event7, title: 'Robotics Workshop' },
-        { src: event8, title: 'AI/ML Session' },
-        { src: event9, title: 'Hackathon Prep' },
-        { src: event10, title: 'Industry Visit' },
-        { src: event11, title: 'Research Presentation' },
-        { src: event12, title: 'Team Building' },
-        { src: event13, title: 'Guest Lecture' },
-        { src: event14, title: 'Project Demo' },
-        { src: event15, title: 'Technical Quiz' },
-        { src: event16, title: 'Innovation Fair' },
-        { src: hackathon, title: 'Annual Hackathon' },
-        { src: techfest, title: 'Tech Festival' },
-        { src: workshop, title: 'Hands-on Workshop' },
-        { src: ei1, title: 'Engineering India Club' }
+        { src: '/src/assets/event1.jpg', title: 'Engineering Workshop' },
+        { src: '/src/assets/event2.jpg', title: 'Technical Seminar' },
+        { src: '/src/assets/event3.jpg', title: 'Innovation Lab' },
+        { src: '/src/assets/event4.jpg', title: 'Project Exhibition' },
+        { src: '/src/assets/event5.jpg', title: 'Coding Competition' },
+        { src: '/src/assets/event6.jpg', title: 'Tech Talk' },
+        { src: '/src/assets/event7.jpg', title: 'Robotics Workshop' },
+        { src: '/src/assets/event8.jpg', title: 'AI/ML Session' },
+        { src: '/src/assets/event9.jpg', title: 'Hackathon Prep' },
+        { src: '/src/assets/event10.jpg', title: 'Industry Visit' },
+        { src: '/src/assets/event11.jpg', title: 'Research Presentation' },
+        { src: '/src/assets/event12.jpg', title: 'Team Building' },
+        { src: '/src/assets/hackathon.jpg', title: 'Annual Hackathon' },
+        { src: '/src/assets/techfest.jpg', title: 'Tech Festival' },
+        { src: '/src/assets/workshop.jpg', title: 'Hands-on Workshop' },
+        { src: '/src/assets/EI1.jpeg', title: 'Engineering India Club' }
       ];
 
       const galleryItems: MediaItem[] = localAssets.map((asset, index) => ({

@@ -13,7 +13,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "server": "node server.js",
-    "start": "node server.js"
+    "start": "vite preview"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
