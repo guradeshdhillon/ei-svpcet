@@ -1,0 +1,1 @@
+@echo off\necho Starting Engineering India SVPCET Gallery Application...\necho.\necho Building the application...\nnpm run build\necho.\necho Starting development server...\necho Open http://localhost:8080 in your browser\necho.\nnpm run dev

@@ -1,8 +1,8 @@
-import Navigation from "../Navigation";
-import Gallery3D from "../Gallery3D";
-import Footer from "../Footer";
+import Navigation from '../Navigation';
+import Gallery3D from '../Gallery3D';
+import Footer from '../Footer';
 
-export default function GalleryLayout() {
+const GalleryLayout = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Navigation />
@@ -12,4 +12,6 @@ export default function GalleryLayout() {
       <Footer />
     </div>
   );
-}
+};
+
+export default GalleryLayout;
