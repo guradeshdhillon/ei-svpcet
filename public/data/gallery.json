@@ -1,0 +1,14 @@
+{
+  "sections": [
+    {
+      "title": "Gallery",
+      "sources": [
+        {
+          "type": "gdrive-folder",
+          "label": "Event Photos",
+          "folderUrl": "https://drive.google.com/drive/folders/1naEpUA2MEiKsLnkyolh3Iw_KKIeFD06o"
+        }
+      ]
+    }
+  ]
+}
