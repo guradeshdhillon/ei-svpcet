@@ -6,7 +6,8 @@ import { componentTagger } from "lovable-tagger";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
-    host: "::",
+    host: "::", 
+//<<<<<<< build/Abhyudaya-gallery-v2
     port: 8080,
     proxy: {
       '/api': {
@@ -15,6 +16,9 @@ export default defineConfig(({ mode }) => ({
         secure: false,
       },
     },
+//=======
+   // port: 3000,
+//>>>>>>> main
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
