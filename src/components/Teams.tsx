@@ -5,7 +5,7 @@ import { Mail, Linkedin } from "lucide-react";
 const Teams = () => {
   const currentTeam = [
     {
-      im :  <img style={{width: "350px", height: "400px", borderRadius: "0.5rem"}} src="/this.png"/>,
+      im :  <img style={{width: "330px", height: "300px", borderRadius: "0.5rem"}} src="/this.png"/>,
       name: "Rahul Sharma",
       role: "President",
       bio: "Leading the club with vision and innovation",
@@ -13,7 +13,7 @@ const Teams = () => {
       linkedin: "#",
     },
     {
-      im :  <img style={{width: "350px", height: "400px", borderRadius: "0.5rem"}} src="/this.png"/>,
+      im :  <img style={{width: "330px", height: "300px", borderRadius: "0.5rem"}} src="/this.png"/>,
       name: "Priya Patel",
       role: "Vice President",
       bio: "Ensuring smooth operations and member engagement",
@@ -21,7 +21,7 @@ const Teams = () => {
       linkedin: "#",
     },
     {
-      im :  <img style={{width: "350px", height: "400px", borderRadius: "0.5rem"}} src="/this.png"/>,
+      im :  <img style={{width: "330px", height: "300px", borderRadius: "0.5rem"}} src="/this.png"/>,
       name: "Amit Kumar",
       role: "Technical Head",
       bio: "Driving technical excellence in all our projects",
@@ -29,7 +29,7 @@ const Teams = () => {
       linkedin: "#",
     },
     {
-      im :  <img style={{width: "350px", height: "400px", borderRadius: "0.5rem"}} src="/this.png"/>,
+      im :  <img style={{width: "330px", height: "300px", borderRadius: "0.5rem"}} src="/this.png"/>,
       name: "Sneha Reddy",
       role: "Events Manager",
       bio: "Creating memorable experiences through events",
@@ -37,7 +37,7 @@ const Teams = () => {
       linkedin: "#",
     },
     {
-      im :  <img style={{width: "350px", height: "400px", borderRadius: "0.5rem"}} src="/this.png"/>,
+      im :  <img style={{width: "330px", height: "300px", borderRadius: "0.5rem"}} src="/this.png"/>,
       name: "Arjun Singh",
       role: "Treasurer",
       bio: "Managing club finances and sponsorships",
@@ -45,7 +45,7 @@ const Teams = () => {
       linkedin: "#",
     },
     {
-      im :  <img style={{width: "350px", height: "400px", borderRadius: "0.5rem"}} src="/this.png"/>,
+      im :  <img style={{width: "330px", height: "300px", borderRadius: "0.5rem"}} src="/this.png"/>,
       name: "Neha Gupta",
       role: "PR & Marketing Head",
       bio: "Building our brand and community presence",
@@ -58,19 +58,19 @@ const Teams = () => {
     {
       year: "2023-2024",
       members: [
-        {im :  <img style={{width: "350px", height: "400px", borderRadius: "0.5rem"}} src="/this.png"/>,  name: "Vikram Mehta", role: "President" },
-        { im :  <img style={{width: "350px", height: "400px", borderRadius: "0.5rem"}} src="/this.png"/>, name: "Anjali Shah", role: "Vice President" },
-        { im :  <img style={{width: "350px", height: "400px", borderRadius: "0.5rem"}} src="/this.png"/>, name: "Karthik Iyer", role: "Technical Head" },
-        { im :  <img style={{width: "350px", height: "400px", borderRadius: "0.5rem"}} src="/this.png"/>, name: "Divya Joshi", role: "Events Manager" },
+        {im :  <img style={{width: "330px", height: "300px", borderRadius: "0.5rem"}} src="/this.png"/>,  name: "Vikram Mehta", role: "President" },
+        { im :  <img style={{width: "330px", height: "300px", borderRadius: "0.5rem"}} src="/this.png"/>, name: "Anjali Shah", role: "Vice President" },
+        { im :  <img style={{width: "330px", height: "300px", borderRadius: "0.5rem"}} src="/this.png"/>, name: "Karthik Iyer", role: "Technical Head" },
+        { im :  <img style={{width: "330px", height: "300px", borderRadius: "0.5rem"}} src="/this.png"/>, name: "Divya Joshi", role: "Events Manager" },
       ],
     },
     {
       year: "2022-2023",
       members: [
-        {im :  <img style={{width: "350px", height: "400px", borderRadius: "0.5rem"}} src="/this.png"/>,  name: "Rohan Verma", role: "President" },
-        { im :  <img style={{width: "350px", height: "400px", borderRadius: "0.5rem"}} src="/this.png"/>, name: "Pooja Nair", role: "Vice President" },
-        { im :  <img style={{width: "350px", height: "400px", borderRadius: "0.5rem"}} src="/this.png"/>, name: "Aditya Rao", role: "Technical Head" },
-        { im :  <img style={{width: "350px", height: "400px", borderRadius: "0.5rem"}} src="/this.png"/>, name: "Kavya Desai", role: "Events Manager" },
+        {im :  <img style={{width: "330px", height: "300px", borderRadius: "0.5rem"}} src="/this.png"/>,  name: "Rohan Verma", role: "President" },
+        { im :  <img style={{width: "330px", height: "300px", borderRadius: "0.5rem"}} src="/this.png"/>, name: "Pooja Nair", role: "Vice President" },
+        { im :  <img style={{width: "330px", height: "300px", borderRadius: "0.5rem"}} src="/this.png"/>, name: "Aditya Rao", role: "Technical Head" },
+        { im :  <img style={{width: "330px", height: "300px", borderRadius: "0.5rem"}} src="/this.png"/>, name: "Kavya Desai", role: "Events Manager" },
       ],
     },
   ];
@@ -99,9 +99,9 @@ const Teams = () => {
                 <Card
                   key={index}
                   className="group hover:shadow-glow transition-all duration-300 border-border bg-card animate-scale-in"
-                  style={{ animationDelay: `${index * 0.05}s`, flexDirection: "column", alignItems: "center" , width: "380px ", height: "545px", borderRadius: "0.5rem"}}
+                  style={{ animationDelay: `${index * 0.05}s`, flexDirection: "column", alignItems: "center" , width: "350px ", height: "440px", borderRadius: "0.5rem"}}
                 >
-                  <CardContent style={{width:"380px ", height: "545px", backgroundColor: " #fff2e6"}} className="p-6">
+                  <CardContent style={{width:"350px ", height: "450px", backgroundColor: " #fff2e6"}} className="p-6">
                     <div className="w-25 h-15 rounded-full bg-gradient-card mx-auto mb-6 flex items-center justify-center group-hover:scale-110 transition-transform">
                       <span className="text-2xl font-bold text-primary">
                         {member.im}
@@ -143,10 +143,10 @@ const Teams = () => {
                     {team.members.map((member, index) => (
                       <Card
                         key={index}
-                        style={{flexDirection: "column", alignItems: "center" , width: "280px ", height: "500px", borderRadius: "0.5rem"}}
+                        style={{flexDirection: "column", alignItems: "center" , width: "280px ", height: "440px", borderRadius: "0.5rem"}}
                         className="hover:shadow-card transition-shadow border-border bg-card"
                       >
-                        <CardContent style={{width:"320px ", height: "500px", backgroundColor: " #fff2e6",  borderRadius: "0.5rem", paddingLeft: "1rem", paddingRight: "1rem"} } className="p-6 text-center">
+                        <CardContent style={{width:"320px ", height: "450px", backgroundColor: " #fff2e6",  borderRadius: "0.5rem", paddingLeft: "1rem", paddingRight: "1rem"} } className="p-6 text-center">
                           <div className="w-25 h-15 rounded-full bg-gradient-card mx-auto mb-4 flex items-center justify-center">
                             <span className="text-xl font-bold text-primary">
                               {member.im}
