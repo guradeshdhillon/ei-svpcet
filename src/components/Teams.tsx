@@ -5,6 +5,7 @@ import { Mail, Linkedin } from "lucide-react";
 const Teams = () => {
   const currentTeam = [
     {
+      im :  <img style={{width: "350px", height: "400px", borderRadius: "0.5rem"}} src="/this.png"/>,
       name: "Rahul Sharma",
       role: "President",
       bio: "Leading the club with vision and innovation",
@@ -12,6 +13,7 @@ const Teams = () => {
       linkedin: "#",
     },
     {
+      im :  <img style={{width: "350px", height: "400px", borderRadius: "0.5rem"}} src="/this.png"/>,
       name: "Priya Patel",
       role: "Vice President",
       bio: "Ensuring smooth operations and member engagement",
@@ -19,6 +21,7 @@ const Teams = () => {
       linkedin: "#",
     },
     {
+      im :  <img style={{width: "350px", height: "400px", borderRadius: "0.5rem"}} src="/this.png"/>,
       name: "Amit Kumar",
       role: "Technical Head",
       bio: "Driving technical excellence in all our projects",
@@ -26,6 +29,7 @@ const Teams = () => {
       linkedin: "#",
     },
     {
+      im :  <img style={{width: "350px", height: "400px", borderRadius: "0.5rem"}} src="/this.png"/>,
       name: "Sneha Reddy",
       role: "Events Manager",
       bio: "Creating memorable experiences through events",
@@ -33,6 +37,7 @@ const Teams = () => {
       linkedin: "#",
     },
     {
+      im :  <img style={{width: "350px", height: "400px", borderRadius: "0.5rem"}} src="/this.png"/>,
       name: "Arjun Singh",
       role: "Treasurer",
       bio: "Managing club finances and sponsorships",
@@ -40,6 +45,7 @@ const Teams = () => {
       linkedin: "#",
     },
     {
+      im :  <img style={{width: "350px", height: "400px", borderRadius: "0.5rem"}} src="/this.png"/>,
       name: "Neha Gupta",
       role: "PR & Marketing Head",
       bio: "Building our brand and community presence",
@@ -52,19 +58,19 @@ const Teams = () => {
     {
       year: "2023-2024",
       members: [
-        { name: "Vikram Mehta", role: "President" },
-        { name: "Anjali Shah", role: "Vice President" },
-        { name: "Karthik Iyer", role: "Technical Head" },
-        { name: "Divya Joshi", role: "Events Manager" },
+        {im :  <img style={{width: "350px", height: "400px", borderRadius: "0.5rem"}} src="/this.png"/>,  name: "Vikram Mehta", role: "President" },
+        { im :  <img style={{width: "350px", height: "400px", borderRadius: "0.5rem"}} src="/this.png"/>, name: "Anjali Shah", role: "Vice President" },
+        { im :  <img style={{width: "350px", height: "400px", borderRadius: "0.5rem"}} src="/this.png"/>, name: "Karthik Iyer", role: "Technical Head" },
+        { im :  <img style={{width: "350px", height: "400px", borderRadius: "0.5rem"}} src="/this.png"/>, name: "Divya Joshi", role: "Events Manager" },
       ],
     },
     {
       year: "2022-2023",
       members: [
-        { name: "Rohan Verma", role: "President" },
-        { name: "Pooja Nair", role: "Vice President" },
-        { name: "Aditya Rao", role: "Technical Head" },
-        { name: "Kavya Desai", role: "Events Manager" },
+        {im :  <img style={{width: "350px", height: "400px", borderRadius: "0.5rem"}} src="/this.png"/>,  name: "Rohan Verma", role: "President" },
+        { im :  <img style={{width: "350px", height: "400px", borderRadius: "0.5rem"}} src="/this.png"/>, name: "Pooja Nair", role: "Vice President" },
+        { im :  <img style={{width: "350px", height: "400px", borderRadius: "0.5rem"}} src="/this.png"/>, name: "Aditya Rao", role: "Technical Head" },
+        { im :  <img style={{width: "350px", height: "400px", borderRadius: "0.5rem"}} src="/this.png"/>, name: "Kavya Desai", role: "Events Manager" },
       ],
     },
   ];
@@ -93,12 +99,12 @@ const Teams = () => {
                 <Card
                   key={index}
                   className="group hover:shadow-glow transition-all duration-300 border-border bg-card animate-scale-in"
-                  style={{ animationDelay: `${index * 0.05}s` }}
+                  style={{ animationDelay: `${index * 0.05}s`, flexDirection: "column", alignItems: "center" , width: "380px ", height: "545px", borderRadius: "0.5rem"}}
                 >
-                  <CardContent className="p-6">
-                    <div className="w-20 h-20 rounded-full bg-gradient-card mx-auto mb-4 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <CardContent style={{width:"380px ", height: "545px", backgroundColor: " #fff2e6"}} className="p-6">
+                    <div className="w-25 h-15 rounded-full bg-gradient-card mx-auto mb-6 flex items-center justify-center group-hover:scale-110 transition-transform">
                       <span className="text-2xl font-bold text-primary">
-                        {member.name.split(" ").map(n => n[0]).join("")}
+                        {member.im}
                       </span>
                     </div>
                     <h3 className="text-xl font-bold text-foreground text-center mb-1">
@@ -107,16 +113,10 @@ const Teams = () => {
                     <p className="text-secondary font-semibold text-center mb-3">
                       {member.role}
                     </p>
-                    <p className="text-muted-foreground text-center text-sm mb-4">
-                      {member.bio}
-                    </p>
+                    
                     <div className="flex justify-center gap-4">
-                      <a
-                        href={`mailto:${member.email}`}
-                        className="text-muted-foreground hover:text-primary transition-colors"
-                      >
-                        <Mail className="w-5 h-5" />
-                      </a>
+                      
+                        
                       <a
                         href={member.linkedin}
                         target="_blank"
@@ -143,12 +143,13 @@ const Teams = () => {
                     {team.members.map((member, index) => (
                       <Card
                         key={index}
+                        style={{flexDirection: "column", alignItems: "center" , width: "280px ", height: "500px", borderRadius: "0.5rem"}}
                         className="hover:shadow-card transition-shadow border-border bg-card"
                       >
-                        <CardContent className="p-6 text-center">
-                          <div className="w-16 h-16 rounded-full bg-gradient-card mx-auto mb-4 flex items-center justify-center">
+                        <CardContent style={{width:"320px ", height: "500px", backgroundColor: " #fff2e6",  borderRadius: "0.5rem", paddingLeft: "1rem", paddingRight: "1rem"} } className="p-6 text-center">
+                          <div className="w-25 h-15 rounded-full bg-gradient-card mx-auto mb-4 flex items-center justify-center">
                             <span className="text-xl font-bold text-primary">
-                              {member.name.split(" ").map(n => n[0]).join("")}
+                              {member.im}
                             </span>
                           </div>
                           <h4 className="font-bold text-foreground mb-1">

@@ -74,17 +74,17 @@ const Activities = () => {
     },
   ];
 
- const otherActivities = [
-    "Weekly Coding Sessions",
-    "Project Showcases",
-    "Industry Visits",
-    "Social Outreach Programs",
-   "Seminar Series",
-    "Tech Talks",
-];
+//  const otherActivities = [
+//     "Weekly Coding Sessions",
+//     "Project Showcases",
+//     "Industry Visits",
+//     "Social Outreach Programs",
+//    "Seminar Series",
+//     "Tech Talks",
+// ];
 
   return (
-    <section id="activities" className="py-20 bg-muted/30">
+    <section style={{backgroundColor:"#fff2e6"}} id="activities" className="py-20 bg-muted/30">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 animate-fade-in">
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
@@ -108,11 +108,11 @@ const Activities = () => {
                   alt={activity.title}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
-                <div className={`absolute inset-0 bg-gradient-to-t ${activity.color} opacity-60`} />
+                {/* <div className={`absolute inset-0 bg-gradient-to-t ${activity.color} opacity-60`} /> */}
               </div>
               <CardContent className="p-6">
-                <div className="flex justify-between items-start mb-3 min-h-[4rem]">
-                  <h3 className="text-2xl font-bold text-foreground flex-1 leading-tight">
+                <div className="flex justify-between items-start mb-2 min-h-[0.1rem]">
+                  <h3 className="text-1xl font-bold text-foreground flex-1 leading-tight">
                     {activity.title}
                   </h3>
                   <button
@@ -152,7 +152,7 @@ const Activities = () => {
           ))}
         </div>
 
-        <div className="max-w-4xl mx-auto">
+        {/* <div className="max-w-4xl mx-auto">
           <h3 className="text-2xl font-bold text-foreground mb-6 text-center">
             More Activities
           </h3>
@@ -168,7 +168,7 @@ const Activities = () => {
               </Card>
             ))}
           </div>
-        </div>
+        </div> */}
       </div>
     </section>
   );

@@ -162,7 +162,7 @@ const Gallery3D = () => {
   }
 
   return (
-    <section id="gallery" className="py-20 bg-slate-50 min-h-screen">
+    <section style={{backgroundColor:"#fff2e6"}} id="gallery" className="py-20 bg-slate-50 min-h-screen">
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold mb-4">

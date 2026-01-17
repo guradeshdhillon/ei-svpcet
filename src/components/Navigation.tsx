@@ -36,12 +36,14 @@ const Navigation = () => {
       isScrolled ? 'bg-background/95 backdrop-blur-md shadow-md' : 'bg-transparent'
     }`}>
       <div className="container mx-auto px-4 py-4">
+        
         <div className="flex items-center justify-between">
+          
           <div className="flex items-center space-x-2">
             <img 
               src="/club-logo.png" 
               alt="Engineering India Logo" 
-              className="w-12 h-12 object-contain" 
+              className="w-13 h-12 object-contain" 
             />
             <span className="text-xl font-bold text-foreground">
               Engineering India SVPCET
