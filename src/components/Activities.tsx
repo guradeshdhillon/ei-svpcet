@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Calendar, MapPin } from "lucide-react";
+import { Calendar, MapPin, ChevronDown } from "lucide-react";
+import { useState } from "react";
 import abhyudaya from "@/activities-assets/abhyudaya.jpeg";
 import donationdrive from "@/activities-assets/donationdrive.jpg";
 import rashtrabimaan from "@/activities-assets/rashtrabimaan.png";
@@ -9,6 +10,15 @@ import sevasankalp from "@/activities-assets/sevasankalp.jpeg";
 import diwalimilan from "@/activities-assets/diwalimilan.jpeg";
 
 const Activities = () => {
+  const [expandedCards, setExpandedCards] = useState<{ [key: number]: boolean }>({});
+
+  const toggleCard = (index: number) => {
+    setExpandedCards(prev => ({
+      ...prev,
+      [index]: !prev[index]
+    }));
+  };
+
   const activities = [
     {
       title: "Abhyudaya 24.0",
@@ -85,11 +95,11 @@ const Activities = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 mb-12">
+        <div className="grid md:grid-cols-3 gap-8 mb-12 items-start">
           {activities.map((activity, index) => (
             <Card
               key={index}
-              className="group overflow-hidden hover:shadow-glow transition-all duration-300 border-border animate-scale-in"
+              className="group overflow-hidden hover:shadow-glow transition-all duration-300 border-border animate-scale-in self-start w-full"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               <div className="relative h-56 overflow-hidden">
@@ -101,20 +111,40 @@ const Activities = () => {
                 <div className={`absolute inset-0 bg-gradient-to-t ${activity.color} opacity-60`} />
               </div>
               <CardContent className="p-6">
-                <h3 className="text-2xl font-bold text-foreground mb-3">
-                  {activity.title}
-                </h3>
-                <p className="text-muted-foreground mb-4 leading-relaxed">
-                  {activity.description}
-                </p>
-                <div className="flex flex-col gap-2 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-primary" />
-                    <span>{activity.date}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-primary" />
-                    <span>{activity.location}</span>
+                <div className="flex justify-between items-start mb-3 min-h-[4rem]">
+                  <h3 className="text-2xl font-bold text-foreground flex-1 leading-tight">
+                    {activity.title}
+                  </h3>
+                  <button
+                    onClick={() => toggleCard(index)}
+                    className="ml-2 p-1 hover:bg-muted rounded-full transition-colors flex-shrink-0"
+                    aria-label={expandedCards[index] ? "Collapse" : "Expand"}
+                  >
+                    <ChevronDown
+                      className={`w-5 h-5 text-primary transition-transform duration-300 ${
+                        expandedCards[index] ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+                </div>
+                
+                <div
+                  className={`overflow-hidden transition-all duration-300 ${
+                    expandedCards[index] ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+                  }`}
+                >
+                  <p className="text-muted-foreground mb-4 leading-relaxed">
+                    {activity.description}
+                  </p>
+                  <div className="flex flex-col gap-2 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-primary" />
+                      <span>{activity.date}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <MapPin className="w-4 h-4 text-primary" />
+                      <span>{activity.location}</span>
+                    </div>
                   </div>
                 </div>
               </CardContent>
